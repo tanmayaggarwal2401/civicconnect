@@ -1,0 +1,16 @@
+{
+  "name": "civicconnect",
+  "version": "1.0.0",
+  "description": "CivicConnect - Intelligent Citizen-to-Agency Grid for Delhi (Team HackX)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "deploy": "firebase deploy"
+  },
+  "dependencies": {
+    "firebase": "^10.8.0"
+  },
+  "devDependencies": {
+    "firebase-tools": "^13.35.1"
+  }
+}

@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin &amp; Govt Control Room | CivicConnect Delhi</title>
+  <link rel="stylesheet" href="css/style.css">
+  <!-- Leaflet Map CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+</head>
+<body>
+
+  <!-- Site Navigation -->
+  <header class="site-header">
+    <div class="container navbar">
+      <a href="index.html" class="brand-link">
+        <span class="brand-logo-pin">
+          <svg viewBox="0 0 24 24" width="28" height="28" fill="none">
+            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" fill="#0D5C3A"/>
+            <circle cx="12" cy="9" r="2.5" fill="#ffffff"/>
+          </svg>
+        </span>
+        <span class="brand-name">CivicConnect</span>
+        <span class="brand-badge">Govt Portal</span>
+      </a>
+
+      <button id="navToggle" class="nav-toggle" aria-label="Toggle Navigation">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+
+      <ul id="navMenu" class="nav-menu">
+        <li class="nav-item"><a href="index.html">Home</a></li>
+        <li class="nav-item"><a href="report.html">Report Issue</a></li>
+        <li class="nav-item"><a href="track.html">Track</a></li>
+        <li class="nav-item"><a href="leaderboard.html">Leaderboard</a></li>
+        <li class="nav-item"><a href="verify.html">Verify Resolution</a></li>
+        <li class="nav-item active"><a href="admin.html" class="nav-admin-link">Govt Portal</a></li>
+        <li class="nav-item">
+          <a href="admin-login.html" class="btn-logout">Officer Logout</a>
+        </li>
+      </ul>
+    </div>
+  </header>
+
+  <main class="section" style="padding-top: 2rem;">
+    <div class="container">
+      <!-- Department Switcher Tabs -->
+      <div class="dept-tab-bar">
+        <a href="admin.html" class="dept-tab-item active">Master Grid (All Departments)</a>
+        <a href="admin-mcd.html" class="dept-tab-item">MCD (Lanes &lt;60ft)</a>
+        <a href="admin-pwd.html" class="dept-tab-item">PWD (Roads &ge;60ft)</a>
+        <a href="admin-djb.html" class="dept-tab-item">DJB (Sewers &amp; Drains)</a>
+        <a href="admin-dda.html" class="dept-tab-item">DDA (Parks)</a>
+      </div>
+
+      <div style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 1rem; margin-bottom: 2rem;">
+        <div>
+          <div class="hero-eyebrow" style="margin-bottom: 0.5rem;">National Capital Territory of Delhi • Municipal Grid</div>
+          <h1 style="font-size: 2.25rem; margin-bottom: 0.35rem;">Government Monitoring Control Room</h1>
+          <p style="font-size: 0.95rem; color: var(--text-body); margin: 0;">
+            Unified inter-agency monitoring grid across MCD, PWD, DJB, and DDA. Track open issues, update work-in-progress, and review AI verified resolutions.
+          </p>
+        </div>
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+          <div class="officer-session-pill">
+            <span style="width: 8px; height: 8px; border-radius: 50%; background: #10B981;"></span>
+            <span id="officerIdBadge">Officer: DELHI-CHIEF-01</span>
+          </div>
+          <span style="font-size: 0.85rem; color: var(--text-muted); font-weight: 500;" id="lastRefreshedTime">Live Telemetry Synchronized</span>
+        </div>
+      </div>
+
+      <!-- Live KPI Metrics Grid -->
+      <div class="admin-metrics-grid">
+        <div class="metric-card primary-metric">
+          <div class="metric-header">Total Grievances</div>
+          <div class="metric-number" id="kpiTotal">0</div>
+          <div class="metric-sub">Across all 12 Delhi NCT Zones</div>
+        </div>
+
+        <div class="metric-card red-metric">
+          <div class="metric-header" style="color: var(--status-red);">Issue Not Solved (Red)</div>
+          <div class="metric-number" style="color: var(--status-red);" id="kpiUnsolved">0</div>
+          <div class="metric-sub">Pending contractor allocation &amp; SLA queue</div>
+        </div>
+
+        <div class="metric-card yellow-metric">
+          <div class="metric-header" style="color: var(--status-yellow);">Work in Process (Yellow)</div>
+          <div class="metric-number" style="color: var(--status-yellow);" id="kpiProcess">0</div>
+          <div class="metric-sub">Active field crew repair in progress</div>
+        </div>
+
+        <div class="metric-card green-metric">
+          <div class="metric-header" style="color: var(--status-green);">Issue Solved (Green)</div>
+          <div class="metric-number" style="color: var(--status-green);" id="kpiSolved">0</div>
+          <div class="metric-sub">Repaired &amp; AI-verified with citizen OTP</div>
+        </div>
+      </div>
+
+      <!-- Delhi Map Section -->
+      <div class="card" style="padding: 1.5rem; margin-bottom: 2.5rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <h3 style="font-size: 1.25rem; margin-bottom: 0.2rem;">Delhi NCT Geospatial Grid</h3>
+            <p style="font-size: 0.88rem; color: var(--text-body); margin: 0;">
+              Live indicators on Delhi map: <strong>Red</strong> = Not Solved | <strong>Yellow</strong> = Work in Process | <strong>Green</strong> = Solved
+            </p>
+          </div>
+
+          <!-- Map Color Filter Pills -->
+          <div class="filter-btn-group">
+            <button type="button" class="filter-pill-btn active" onclick="filterMapMarkers('all', this)">All Markers</button>
+            <button type="button" class="filter-pill-btn" onclick="filterMapMarkers('red', this)" style="color: var(--status-red);">🔴 Unsolved</button>
+            <button type="button" class="filter-pill-btn" onclick="filterMapMarkers('yellow', this)" style="color: var(--status-yellow);">🟡 In Process</button>
+            <button type="button" class="filter-pill-btn" onclick="filterMapMarkers('green', this)" style="color: var(--status-green);">🟢 Solved</button>
+          </div>
+        </div>
+
+        <!-- Interactive Map Container -->
+        <div class="map-container-wrapper">
+          <div id="adminDelhiMap" class="delhi-map-box"></div>
+          
+          <div class="map-legend-bar">
+            <div class="legend-items">
+              <span class="legend-pill"><span class="legend-dot dot-red"></span> Red: Issue Not Solved (Filed / Assigned)</span>
+              <span class="legend-pill"><span class="legend-dot dot-yellow"></span> Yellow: Work in Process (Active Crew)</span>
+              <span class="legend-pill"><span class="legend-dot dot-green"></span> Green: Issue Solved (Repaired &amp; Closed)</span>
+            </div>
+            <div style="font-size: 0.8rem; color: var(--text-muted);">
+              Click any marker to inspect photo &amp; update status
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Issues Management Table Section -->
+      <div class="card" style="padding: 1.5rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <h3 style="font-size: 1.25rem; margin-bottom: 0.2rem;">All Civic Grievances Registry</h3>
+            <p style="font-size: 0.88rem; color: var(--text-body); margin: 0;">
+              Filter, search, and update resolution lifecycle across departments.
+            </p>
+          </div>
+        </div>
+
+        <!-- Filter Controls Bar -->
+        <div class="admin-filter-bar">
+          <div class="admin-search-box">
+            <input type="text" id="adminTableSearch" class="form-control" placeholder="Search by Reference ID, location, or landmark..." style="padding: 0.55rem 0.85rem; font-size: 0.88rem;">
+          </div>
+
+          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+            <select id="filterAgencySelect" class="form-select" style="padding: 0.55rem 0.85rem; font-size: 0.88rem; width: auto;">
+              <option value="all">All Agencies</option>
+              <option value="MCD">MCD (Lanes &lt;60ft)</option>
+              <option value="PWD">PWD (Roads &ge;60ft)</option>
+              <option value="DJB">DJB (Sewers / Drains)</option>
+              <option value="DDA">DDA (Parks)</option>
+            </select>
+
+            <select id="filterStatusSelect" class="form-select" style="padding: 0.55rem 0.85rem; font-size: 0.88rem; width: auto;">
+              <option value="all">All Statuses</option>
+              <option value="red">🔴 Unsolved (Filed / Assigned)</option>
+              <option value="yellow">🟡 Work in Process (In Progress)</option>
+              <option value="green">🟢 Solved (Repaired / Closed)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Table -->
+        <div class="complaints-table-container">
+          <table class="styled-table" id="adminGrievanceTable">
+            <thead>
+              <tr>
+                <th>Reference ID</th>
+                <th>Category</th>
+                <th>Agency</th>
+                <th>Location</th>
+                <th>Status Indicator</th>
+                <th>Date</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="adminTableBody">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Admin Action Modal (For updating issue status) -->
+  <div id="adminActionModal" class="modal-overlay">
+    <div class="modal-window">
+      <div class="modal-header">
+        <h3 id="modalTicketId">CC-DEL-2026-00000</h3>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0;" id="modalTicketLocation">Incident Location, Delhi</p>
+      </div>
+
+      <div style="display: flex; gap: 1rem; margin-bottom: 1.25rem;">
+        <div style="width: 100px; height: 100px; border-radius: var(--radius-sm); overflow: hidden; border: 1px solid var(--border-color); flex-shrink: 0; background: var(--bg-subtle);">
+          <img id="modalTicketImg" src="" alt="Issue photo" style="width: 100%; height: 100%; object-fit: cover;">
+        </div>
+        <div>
+          <div style="font-size: 0.82rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;" id="modalTicketAgency">MCD Zonal Dept</div>
+          <div style="font-weight: 700; color: var(--text-dark); font-size: 1.05rem;" id="modalTicketCat">Pothole Hazard</div>
+          <div style="font-size: 0.85rem; color: var(--text-body); margin-top: 0.25rem;" id="modalTicketDesc">Description...</div>
+        </div>
+      </div>
+
+      <form id="adminUpdateForm">
+        <div class="form-group">
+          <label for="updateStatusSelect" class="form-label">Update Grievance Status <span class="req">*</span></label>
+          <select id="updateStatusSelect" class="form-select" required>
+            <option value="Filed">🔴 Filed (Not Solved - Red Pin)</option>
+            <option value="Assigned">🔴 Assigned to Contractor (Not Solved - Red Pin)</option>
+            <option value="In Progress">🟡 In Progress (Work in Process - Yellow Pin)</option>
+            <option value="Repaired">🟢 Repaired (Awaiting AI Verification - Green Pin)</option>
+            <option value="Closed">🟢 Closed (Verified with Citizen OTP - Green Pin)</option>
+          </select>
+          <div class="form-help">Updating the status updates the live indicator color on the Delhi map.</div>
+        </div>
+
+        <div class="form-group">
+          <label for="adminNodalNotes" class="form-label">Nodal Officer Dispatch Log</label>
+          <textarea id="adminNodalNotes" class="form-textarea" rows="2" placeholder="e.g. Dispatched asphalt patching unit from Rohini depot..."></textarea>
+        </div>
+
+        <div style="display: flex; gap: 0.75rem; justify-content: flex-end; margin-top: 1.5rem;">
+          <button type="button" id="closeAdminModalBtn" class="btn btn-outline btn-sm" style="border-radius: var(--radius-pill);">Cancel</button>
+          <button type="submit" class="btn btn-primary btn-sm" style="border-radius: var(--radius-pill);">Save &amp; Broadcast Telemetry</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Site Footer -->
+  <footer class="site-footer">
+    <div class="container footer-content">
+      <div class="footer-team-title">CivicConnect • Team HackX</div>
+      <div class="footer-members">Tanmay Aggarwal, Angel, Sujeet Verma</div>
+      <div class="footer-meta">VIPS-TC • HackIIITD 2026 • ESYA '26</div>
+    </div>
+  </footer>
+
+  <!-- Leaflet Map JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script type="module" src="js/firebase-init.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/chatbot.js"></script>
+
+  <script>
+    let adminMap = null;
+    let mapMarkerLayerGroup = null;
+    let selectedTicketForModal = null;
+    let currentMapFilter = "all";
+
+    document.addEventListener("DOMContentLoaded", () => {
+      initAdminDashboard();
+      setupAdminEventListeners();
+    });
+
+    function initAdminDashboard() {
+      const auth = sessionStorage.getItem("civicconnect_auth_officer");
+      if (auth) {
+        try {
+          const parsed = JSON.parse(auth);
+          if (parsed.officerId) {
+            document.getElementById("officerIdBadge").textContent = `Officer: ${parsed.officerId}`;
+          }
+        } catch(e) {}
+      }
+
+      updateKpis();
+      initDelhiAdminMap();
+      renderAdminTable();
+      document.getElementById("lastRefreshedTime").textContent = `Last sync: ${new Date().toLocaleTimeString()}`;
+    }
+
+    function updateKpis() {
+      const tickets = getComplaints();
+      let unsolved = 0;
+      let process = 0;
+      let solved = 0;
+
+      tickets.forEach(t => {
+        const ind = getStatusIndicator(t.status);
+        if (ind.color === "red") unsolved++;
+        else if (ind.color === "yellow") process++;
+        else if (ind.color === "green") solved++;
+      });
+
+      document.getElementById("kpiTotal").textContent = tickets.length;
+      document.getElementById("kpiUnsolved").textContent = unsolved;
+      document.getElementById("kpiProcess").textContent = process;
+      document.getElementById("kpiSolved").textContent = solved;
+    }
+
+    function initDelhiAdminMap() {
+      const mapEl = document.getElementById("adminDelhiMap");
+      if (!mapEl || typeof L === "undefined") return;
+
+      adminMap = L.map("adminDelhiMap").setView([28.6250, 77.1950], 11);
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 19,
+        attribution: '&copy; OpenStreetMap'
+      }).addTo(adminMap);
+
+      mapMarkerLayerGroup = L.layerGroup().addTo(adminMap);
+      renderMapMarkers();
+    }
+
+    function renderMapMarkers() {
+      if (!mapMarkerLayerGroup) return;
+      mapMarkerLayerGroup.clearLayers();
+
+      const tickets = getComplaints();
+
+      tickets.forEach(t => {
+        const ind = getStatusIndicator(t.status);
+        if (currentMapFilter !== "all" && ind.color !== currentMapFilter) {
+          return;
+        }
+
+        const lat = t.coordinates ? t.coordinates.lat : 28.6139;
+        const lng = t.coordinates ? t.coordinates.lng : 77.2090;
+
+        const pinIcon = createMapPinIcon(ind.color);
+
+        const marker = L.marker([lat, lng], { icon: pinIcon });
+
+        const popupContent = `
+          <div style="font-family: var(--font-body); width: 220px; padding: 4px;">
+            <div style="width: 100%; height: 90px; border-radius: 4px; overflow: hidden; margin-bottom: 6px; background: #eee;">
+              <img src="${t.beforeImage || 'images/pothole.jpg'}" alt="issue photo" style="width: 100%; height: 100%; object-fit: cover;">
+            </div>
+            <div style="font-size: 0.75rem; font-weight: 700; color: var(--primary); text-transform: uppercase;">${t.agency} • ${t.id}</div>
+            <div style="font-weight: 700; font-size: 0.92rem; color: var(--text-dark); margin: 2px 0;">${t.categoryLabel}</div>
+            <div style="font-size: 0.8rem; color: var(--text-body); margin-bottom: 6px;">${t.locationText}</div>
+            <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #eee; padding-top: 6px;">
+              <span class="badge ${ind.badgeClass}">${t.status}</span>
+              <a href="javascript:void(0)" onclick="openAdminModal('${t.id}')" style="font-size: 0.8rem; font-weight: 700; color: var(--primary);">Manage &rarr;</a>
+            </div>
+          </div>
+        `;
+
+        marker.bindPopup(popupContent);
+        mapMarkerLayerGroup.addLayer(marker);
+      });
+    }
+
+    function filterMapMarkers(color, btn) {
+      currentMapFilter = color;
+      document.querySelectorAll(".filter-pill-btn").forEach(b => b.classList.remove("active"));
+      if (btn) btn.classList.add("active");
+      renderMapMarkers();
+    }
+
+    function renderAdminTable() {
+      const tickets = getComplaints();
+      const tbody = document.getElementById("adminTableBody");
+      const searchVal = document.getElementById("adminTableSearch").value.toLowerCase().trim();
+      const agencyVal = document.getElementById("filterAgencySelect").value;
+      const statusVal = document.getElementById("filterStatusSelect").value;
+
+      tbody.innerHTML = "";
+
+      const filtered = tickets.filter(t => {
+        const ind = getStatusIndicator(t.status);
+
+        if (agencyVal !== "all" && t.agency !== agencyVal) return false;
+        if (statusVal !== "all" && ind.color !== statusVal) return false;
+
+        if (searchVal) {
+          const matchId = t.id.toLowerCase().includes(searchVal);
+          const matchLoc = (t.locationText || "").toLowerCase().includes(searchVal);
+          const matchCat = (t.categoryLabel || "").toLowerCase().includes(searchVal);
+          if (!matchId && !matchLoc && !matchCat) return false;
+        }
+
+        return true;
+      });
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 1.5rem;">No grievances found matching active filters.</td></tr>`;
+        return;
+      }
+
+      filtered.forEach(t => {
+        const ind = getStatusIndicator(t.status);
+        const tr = document.createElement("tr");
+
+        tr.innerHTML = `
+          <td><strong>${t.id}</strong></td>
+          <td>${t.categoryLabel || t.category}</td>
+          <td><span class="agency-badge" style="font-size: 0.72rem;">${t.agency}</span></td>
+          <td style="max-width: 220px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${t.locationText}</td>
+          <td>
+            <span class="badge ${ind.badgeClass}">
+              <span class="legend-dot dot-${ind.color}" style="width: 8px; height: 8px; margin-right: 4px;"></span>
+              ${t.status}
+            </span>
+          </td>
+          <td>${t.date}</td>
+          <td>
+            <button type="button" class="btn btn-outline btn-sm" onclick="openAdminModal('${t.id}')" style="padding: 0.25rem 0.65rem; font-size: 0.75rem; border-radius: var(--radius-pill);">
+              Update Status &rarr;
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function setupAdminEventListeners() {
+      document.getElementById("adminTableSearch").addEventListener("input", renderAdminTable);
+      document.getElementById("filterAgencySelect").addEventListener("change", renderAdminTable);
+      document.getElementById("filterStatusSelect").addEventListener("change", renderAdminTable);
+
+      document.getElementById("closeAdminModalBtn").addEventListener("click", () => {
+        document.getElementById("adminActionModal").classList.remove("active");
+      });
+
+      document.getElementById("adminUpdateForm").addEventListener("submit", handleAdminSaveStatus);
+    }
+
+    function openAdminModal(ticketId) {
+      selectedTicketForModal = findComplaintById(ticketId);
+      if (!selectedTicketForModal) return;
+
+      document.getElementById("modalTicketId").textContent = selectedTicketForModal.id;
+      document.getElementById("modalTicketLocation").textContent = selectedTicketForModal.locationText;
+      document.getElementById("modalTicketAgency").textContent = `${selectedTicketForModal.agency} • ${selectedTicketForModal.roadTypeLabel || selectedTicketForModal.roadType}`;
+      document.getElementById("modalTicketCat").textContent = selectedTicketForModal.categoryLabel;
+      document.getElementById("modalTicketDesc").textContent = selectedTicketForModal.description;
+      document.getElementById("modalTicketImg").src = selectedTicketForModal.beforeImage || "images/pothole.jpg";
+
+      document.getElementById("updateStatusSelect").value = selectedTicketForModal.status;
+      document.getElementById("adminActionModal").classList.add("active");
+    }
+
+    function handleAdminSaveStatus(e) {
+      e.preventDefault();
+      if (!selectedTicketForModal) return;
+
+      const newStatus = document.getElementById("updateStatusSelect").value;
+      const notes = document.getElementById("adminNodalNotes").value.trim();
+
+      selectedTicketForModal.status = newStatus;
+      if (notes) {
+        selectedTicketForModal.nodalNotes = notes;
+      }
+
+      updateComplaint(selectedTicketForModal);
+      document.getElementById("adminActionModal").classList.remove("active");
+
+      // Refresh map, table, KPIs
+      updateKpis();
+      renderMapMarkers();
+      renderAdminTable();
+
+      alert(`Grievance ${selectedTicketForModal.id} status successfully updated to "${newStatus}"! Map indicator updated.`);
+    }
+  </script>
+</body>
+</html>

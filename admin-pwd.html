@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PWD Arterial Grievance Command | CivicConnect Delhi</title>
+  <link rel="stylesheet" href="css/style.css">
+  <!-- Leaflet Map CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+</head>
+<body>
+
+  <!-- Site Navigation -->
+  <header class="site-header">
+    <div class="container navbar">
+      <a href="index.html" class="brand-link">
+        <span class="brand-logo-pin">
+          <svg viewBox="0 0 24 24" width="28" height="28" fill="none">
+            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" fill="#0D5C3A"/>
+            <circle cx="12" cy="9" r="2.5" fill="#ffffff"/>
+          </svg>
+        </span>
+        <span class="brand-name">CivicConnect</span>
+        <span class="brand-badge" style="background: #B45309; color: #fff;">PWD Portal</span>
+      </a>
+
+      <button id="navToggle" class="nav-toggle" aria-label="Toggle Navigation">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+
+      <ul id="navMenu" class="nav-menu">
+        <li class="nav-item"><a href="index.html">Home</a></li>
+        <li class="nav-item"><a href="report.html">Report Issue</a></li>
+        <li class="nav-item"><a href="track.html">Track</a></li>
+        <li class="nav-item"><a href="leaderboard.html">Leaderboard</a></li>
+        <li class="nav-item"><a href="verify.html">Verify Resolution</a></li>
+        <li class="nav-item active"><a href="admin.html" class="nav-admin-link">Govt Portal</a></li>
+        <li class="nav-item">
+          <a href="admin-login.html" class="btn-logout">Officer Logout</a>
+        </li>
+      </ul>
+    </div>
+  </header>
+
+  <main class="section" style="padding-top: 2rem;">
+    <div class="container">
+      <!-- Department Switcher Tabs -->
+      <div class="dept-tab-bar">
+        <a href="admin.html" class="dept-tab-item">Master Grid (All)</a>
+        <a href="admin-mcd.html" class="dept-tab-item">MCD (Lanes &lt;60ft)</a>
+        <a href="admin-pwd.html" class="dept-tab-item active">PWD (Roads &ge;60ft)</a>
+        <a href="admin-djb.html" class="dept-tab-item">DJB (Sewers &amp; Drains)</a>
+        <a href="admin-dda.html" class="dept-tab-item">DDA (Parks)</a>
+      </div>
+
+      <!-- Department Header Banner -->
+      <div class="dept-header-banner">
+        <div class="dept-title-group">
+          <div class="dept-badge-icon dept-badge-pwd">PWD</div>
+          <div>
+            <div style="font-size: 0.8rem; text-transform: uppercase; font-weight: 700; color: #B45309;">Public Works Department Delhi</div>
+            <h1 style="font-size: 1.85rem; margin-bottom: 0.2rem;">Arterial Corridors &amp; Highway Maintenance</h1>
+            <p style="font-size: 0.88rem; color: var(--text-body); margin: 0;">
+              <strong>Exclusive Jurisdiction:</strong> Arterial roads, avenues, express corridors, and bypasses 60 feet or wider, flyovers, central dividers, and guard rails across NCT Delhi.
+            </p>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 0.75rem; align-items: center;">
+          <div class="officer-session-pill">
+            <span style="width: 8px; height: 8px; border-radius: 50%; background: #10B981;"></span>
+            <span id="pwdOfficerBadge">Officer: PWD-NODAL-09</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Department KPIs -->
+      <div class="admin-metrics-grid">
+        <div class="metric-card primary-metric">
+          <div class="metric-header">Total PWD Tickets</div>
+          <div class="metric-number" id="pwdKpiTotal">0</div>
+          <div class="metric-sub">Arterial roads &ge;60ft maintenance queue</div>
+        </div>
+        <div class="metric-card red-metric">
+          <div class="metric-header" style="color: var(--status-red);">🔴 Unsolved (Red)</div>
+          <div class="metric-number" style="color: var(--status-red);" id="pwdKpiUnsolved">0</div>
+          <div class="metric-sub">Awaiting heavy highway contractor dispatch</div>
+        </div>
+        <div class="metric-card yellow-metric">
+          <div class="metric-header" style="color: var(--status-yellow);">🟡 Work in Process (Yellow)</div>
+          <div class="metric-number" style="color: var(--status-yellow);" id="pwdKpiProcess">0</div>
+          <div class="metric-sub">Asphalt milling / road roller unit active</div>
+        </div>
+        <div class="metric-card green-metric">
+          <div class="metric-header" style="color: var(--status-green);">🟢 Solved (Green)</div>
+          <div class="metric-number" style="color: var(--status-green);" id="pwdKpiSolved">0</div>
+          <div class="metric-sub">Resurfacing complete &amp; AI-verified</div>
+        </div>
+      </div>
+
+      <!-- Department Map -->
+      <div class="card" style="padding: 1.5rem; margin-bottom: 2.5rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <h3 style="font-size: 1.25rem; margin-bottom: 0.2rem;">PWD Jurisdiction Map (&ge;60ft Arterial Network)</h3>
+            <p style="font-size: 0.88rem; color: var(--text-body); margin: 0;">
+              Displaying all civic complaints geo-tagged to Delhi arterial roads 60 feet and wider.
+            </p>
+          </div>
+          <div class="map-legend-bar" style="border: none; padding: 0;">
+            <div class="legend-items">
+              <span class="legend-pill"><span class="legend-dot dot-red"></span> Red: Unsolved</span>
+              <span class="legend-pill"><span class="legend-dot dot-yellow"></span> Yellow: In Process</span>
+              <span class="legend-pill"><span class="legend-dot dot-green"></span> Green: Solved</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="map-container-wrapper">
+          <div id="pwdMap" class="delhi-map-box"></div>
+        </div>
+      </div>
+
+      <!-- Department Tickets Table -->
+      <div class="card" style="padding: 1.5rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <h3 style="font-size: 1.25rem; margin-bottom: 0.2rem;">PWD Active Grievance Queue</h3>
+            <p style="font-size: 0.88rem; color: var(--text-body); margin: 0;">Deploy arterial road rollers, central divider teams, or log heavy maintenance.</p>
+          </div>
+        </div>
+
+        <div class="complaints-table-container">
+          <table class="styled-table" id="pwdTable">
+            <thead>
+              <tr>
+                <th>Reference ID</th>
+                <th>Category</th>
+                <th>Arterial Corridor Location</th>
+                <th>Classification</th>
+                <th>Status Indicator</th>
+                <th>Date Filed</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="pwdTableBody">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- PWD Action Modal -->
+  <div id="pwdActionModal" class="modal-overlay">
+    <div class="modal-window">
+      <div class="modal-header">
+        <h3 id="pwdModalId">CC-DEL-2026-00000</h3>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0;" id="pwdModalLoc">Arterial Location</p>
+      </div>
+
+      <div style="display: flex; gap: 1rem; margin-bottom: 1.25rem;">
+        <div style="width: 100px; height: 100px; border-radius: var(--radius-sm); overflow: hidden; border: 1px solid var(--border-color); flex-shrink: 0; background: var(--bg-subtle);">
+          <img id="pwdModalImg" src="" alt="Issue photo" style="width: 100%; height: 100%; object-fit: cover;">
+        </div>
+        <div>
+          <div style="font-size: 0.82rem; color: #B45309; text-transform: uppercase; font-weight: 700;">PWD Arterial Division</div>
+          <div style="font-weight: 700; color: var(--text-dark); font-size: 1.05rem;" id="pwdModalCat">Road Damage</div>
+          <div style="font-size: 0.85rem; color: var(--text-body); margin-top: 0.25rem;" id="pwdModalDesc">Description...</div>
+        </div>
+      </div>
+
+      <form id="pwdUpdateForm">
+        <div class="form-group">
+          <label for="pwdStatusSelect" class="form-label">Update Status &amp; Dispatch Machinery <span class="req">*</span></label>
+          <select id="pwdStatusSelect" class="form-select" required>
+            <option value="Filed">🔴 Filed (Unsolved - Red Pin)</option>
+            <option value="Assigned">🔴 Assigned to Highway Contractor (Unsolved - Red Pin)</option>
+            <option value="In Progress">🟡 In Progress (Road Roller / Crew Active - Yellow Pin)</option>
+            <option value="Repaired">🟢 Repaired (Awaiting AI Verification - Green Pin)</option>
+            <option value="Closed">🟢 Closed (Verified - Green Pin)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="pwdNotes" class="form-label">PWD Engineering Log</label>
+          <textarea id="pwdNotes" class="form-textarea" rows="2" placeholder="e.g. Deployed asphalt roller and bituminous premix on Vikas Marg..."></textarea>
+        </div>
+
+        <div style="display: flex; gap: 0.75rem; justify-content: flex-end; margin-top: 1.5rem;">
+          <button type="button" onclick="document.getElementById('pwdActionModal').classList.remove('active')" class="btn btn-outline btn-sm" style="border-radius: var(--radius-pill);">Cancel</button>
+          <button type="submit" class="btn btn-primary btn-sm" style="border-radius: var(--radius-pill);">Save Telemetry &amp; Update Map</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Site Footer -->
+  <footer class="site-footer">
+    <div class="container footer-content">
+      <div class="footer-team-title">CivicConnect • Team HackX</div>
+      <div class="footer-members">Tanmay Aggarwal, Angel, Sujeet Verma</div>
+      <div class="footer-meta">VIPS-TC • HackIIITD 2026 • ESYA '26</div>
+    </div>
+  </footer>
+
+  <!-- Leaflet Map JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="js/app.js"></script>
+  <script src="js/chatbot.js"></script>
+
+  <script>
+    let pwdMap = null;
+    let pwdMarkerGroup = null;
+    let currentTicket = null;
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const auth = sessionStorage.getItem("civicconnect_auth_officer");
+      if (auth) {
+        try {
+          const user = JSON.parse(auth);
+          document.getElementById("pwdOfficerBadge").textContent = `Officer: ${user.officerId}`;
+        } catch(e) {}
+      }
+
+      initPwdDashboard();
+    });
+
+    function initPwdDashboard() {
+      const tickets = getComplaints().filter(t => t.agency === "PWD");
+      let unsolved = 0, process = 0, solved = 0;
+
+      tickets.forEach(t => {
+        const ind = getStatusIndicator(t.status);
+        if (ind.color === "red") unsolved++;
+        else if (ind.color === "yellow") process++;
+        else if (ind.color === "green") solved++;
+      });
+
+      document.getElementById("pwdKpiTotal").textContent = tickets.length;
+      document.getElementById("pwdKpiUnsolved").textContent = unsolved;
+      document.getElementById("pwdKpiProcess").textContent = process;
+      document.getElementById("pwdKpiSolved").textContent = solved;
+
+      initPwdMap(tickets);
+      renderPwdTable(tickets);
+
+      document.getElementById("pwdUpdateForm").addEventListener("submit", handlePwdSaveStatus);
+    }
+
+    function initPwdMap(tickets) {
+      if (pwdMap) return;
+      pwdMap = L.map("pwdMap").setView([28.6300, 77.2300], 11);
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 19,
+        attribution: '&copy; OpenStreetMap'
+      }).addTo(pwdMap);
+
+      pwdMarkerGroup = L.layerGroup().addTo(pwdMap);
+      renderMarkers(tickets);
+    }
+
+    function renderMarkers(tickets) {
+      if (!pwdMarkerGroup) return;
+      pwdMarkerGroup.clearLayers();
+
+      tickets.forEach(t => {
+        const ind = getStatusIndicator(t.status);
+        const lat = t.coordinates ? t.coordinates.lat : 28.6139;
+        const lng = t.coordinates ? t.coordinates.lng : 77.2090;
+
+        const pinIcon = createMapPinIcon(ind.color);
+        const marker = L.marker([lat, lng], { icon: pinIcon });
+
+        const popup = `
+          <div style="font-family: var(--font-body); width: 220px; padding: 4px;">
+            <div style="width: 100%; height: 90px; border-radius: 4px; overflow: hidden; margin-bottom: 6px; background: #eee;">
+              <img src="${t.beforeImage || 'images/infrastructure.jpg'}" alt="issue photo" style="width: 100%; height: 100%; object-fit: cover;">
+            </div>
+            <div style="font-size: 0.75rem; font-weight: 700; color: #B45309; text-transform: uppercase;">PWD • ${t.id}</div>
+            <div style="font-weight: 700; font-size: 0.92rem; color: var(--text-dark); margin: 2px 0;">${t.categoryLabel}</div>
+            <div style="font-size: 0.8rem; color: var(--text-body); margin-bottom: 6px;">${t.locationText}</div>
+            <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #eee; padding-top: 6px;">
+              <span class="badge ${ind.badgeClass}">${t.status}</span>
+              <a href="javascript:void(0)" onclick="openModal('${t.id}')" style="font-size: 0.8rem; font-weight: 700; color: var(--primary);">Dispatch &rarr;</a>
+            </div>
+          </div>
+        `;
+        marker.bindPopup(popup);
+        pwdMarkerGroup.addLayer(marker);
+      });
+    }
+
+    function renderPwdTable(tickets) {
+      const tbody = document.getElementById("pwdTableBody");
+      tbody.innerHTML = "";
+
+      if (tickets.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 1.5rem;">No active PWD tickets found.</td></tr>`;
+        return;
+      }
+
+      tickets.forEach(t => {
+        const ind = getStatusIndicator(t.status);
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td><strong>${t.id}</strong></td>
+          <td>${t.categoryLabel || t.category}</td>
+          <td>${t.locationText}</td>
+          <td><span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;">${t.roadTypeLabel || t.roadType}</span></td>
+          <td>
+            <span class="badge ${ind.badgeClass}">
+              <span class="legend-dot dot-${ind.color}" style="width: 8px; height: 8px; margin-right: 4px;"></span>
+              ${t.status}
+            </span>
+          </td>
+          <td>${t.date}</td>
+          <td>
+            <button type="button" class="btn btn-outline btn-sm" onclick="openModal('${t.id}')" style="padding: 0.25rem 0.65rem; font-size: 0.75rem; border-radius: var(--radius-pill);">
+              Dispatch &rarr;
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function openModal(id) {
+      currentTicket = findComplaintById(id);
+      if (!currentTicket) return;
+
+      document.getElementById("pwdModalId").textContent = currentTicket.id;
+      document.getElementById("pwdModalLoc").textContent = currentTicket.locationText;
+      document.getElementById("pwdModalCat").textContent = currentTicket.categoryLabel;
+      document.getElementById("pwdModalDesc").textContent = currentTicket.description;
+      document.getElementById("pwdModalImg").src = currentTicket.beforeImage || "images/infrastructure.jpg";
+      document.getElementById("pwdStatusSelect").value = currentTicket.status;
+
+      document.getElementById("pwdActionModal").classList.add("active");
+    }
+
+    function handlePwdSaveStatus(e) {
+      e.preventDefault();
+      if (!currentTicket) return;
+
+      const newStatus = document.getElementById("pwdStatusSelect").value;
+      const notes = document.getElementById("pwdNotes").value.trim();
+
+      currentTicket.status = newStatus;
+      if (notes) currentTicket.nodalNotes = notes;
+
+      updateComplaint(currentTicket);
+      document.getElementById("pwdActionModal").classList.remove("active");
+
+      const tickets = getComplaints().filter(t => t.agency === "PWD");
+      initPwdDashboard();
+      renderMarkers(tickets);
+      alert(`PWD Complaint ${currentTicket.id} updated to "${newStatus}". Highway maintenance telemetry synced.`);
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate, max-age=0">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>Track Grievances | CivicConnect Delhi</title>
+  <link rel="stylesheet" href="css/style.css">
+  <!-- Leaflet Map CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+  <style>
+    .track-search-bar {
+      display: flex;
+      gap: 0.5rem;
+      max-width: 620px;
+      margin: 0 auto 2.5rem;
+    }
+    .complaints-table-container {
+      overflow-x: auto;
+      background: var(--bg-white);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+    }
+    .complaint-detail-card {
+      background: var(--bg-white);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 1.75rem;
+      margin-bottom: 2.5rem;
+      box-shadow: var(--shadow-sm);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Site Navigation -->
+  <header class="site-header">
+    <div class="container navbar">
+      <a href="index.html" class="brand-link">
+        <span class="brand-logo-pin">
+          <svg viewBox="0 0 24 24" width="28" height="28" fill="none">
+            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" fill="#0D5C3A"/>
+            <circle cx="12" cy="9" r="2.5" fill="#ffffff"/>
+          </svg>
+        </span>
+        <span class="brand-name">CivicConnect</span>
+      </a>
+
+      <button id="navToggle" class="nav-toggle" aria-label="Toggle Navigation">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+
+      <ul id="navMenu" class="nav-menu">
+        <li class="nav-item"><a href="index.html">Home</a></li>
+        <li class="nav-item"><a href="report.html">Report Issue</a></li>
+        <li class="nav-item active"><a href="track.html">Track</a></li>
+        <li class="nav-item"><a href="leaderboard.html">Leaderboard</a></li>
+        <li class="nav-item"><a href="verify.html">Verify Resolution</a></li>
+        <li class="nav-item"><a href="admin-login.html" class="nav-admin-link">Govt Portal</a></li>
+        <li class="nav-item">
+          <a href="report.html" class="nav-action-btn">+ File Issue</a>
+        </li>
+      </ul>
+    </div>
+  </header>
+
+  <main class="section">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Track Civic Grievances</h2>
+        <p>Monitor real-time progress across official Delhi agencies. Color-coded map indicators show exact field statuses across the city.</p>
+      </div>
+
+      <!-- Search Bar -->
+      <form id="trackSearchForm" class="track-search-bar">
+        <input type="text" id="searchRefInput" class="form-control" placeholder="Enter Reference ID (e.g., CC-DEL-2026-10492)" required style="border-radius: var(--radius-pill); padding: 0.8rem 1.25rem;">
+        <button type="submit" class="btn btn-primary" style="border-radius: var(--radius-pill); padding: 0.8rem 1.75rem;">Track Grievance</button>
+      </form>
+
+      <!-- Active Ticket Status & Timeline View -->
+      <div id="activeTicketView" class="complaint-detail-card" style="display: none;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1.25rem; margin-bottom: 1.5rem;">
+          <div>
+            <span class="card-tag" id="detailAgency">MCD Zonal Grid</span>
+            <h3 style="font-size: 1.5rem; margin-bottom: 0.25rem;" id="detailRefId">CC-DEL-2026-00000</h3>
+            <p style="font-size: 0.9rem; color: var(--text-muted); margin: 0;" id="detailCategoryLocation">Pothole • Rohini Sector 7, Delhi</p>
+          </div>
+          <div style="text-align: right;">
+            <div id="statusBadgeContainer">
+              <span class="badge badge-process" id="detailStatusBadge" style="font-size: 0.85rem; padding: 0.35rem 0.75rem;">In Progress</span>
+            </div>
+            <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.4rem;" id="detailTimestamp">Filed on 2026-10-21</div>
+          </div>
+        </div>
+
+        <!-- 6-Stage Timeline: Filed → Assigned → In Progress → Repaired → Verified → Closed -->
+        <div style="margin: 2rem 0;">
+          <h4 style="font-size: 1rem; margin-bottom: 1rem; color: var(--text-dark);">Lifecycle Timeline</h4>
+          <div class="timeline" id="grievanceTimeline">
+            <div class="timeline-step" id="tStep-Filed">
+              <div class="timeline-dot">1</div>
+              <div class="timeline-label">Filed</div>
+            </div>
+            <div class="timeline-step" id="tStep-Assigned">
+              <div class="timeline-dot">2</div>
+              <div class="timeline-label">Assigned</div>
+            </div>
+            <div class="timeline-step" id="tStep-InProgress">
+              <div class="timeline-dot">3</div>
+              <div class="timeline-label">In Progress</div>
+            </div>
+            <div class="timeline-step" id="tStep-Repaired">
+              <div class="timeline-dot">4</div>
+              <div class="timeline-label">Repaired</div>
+            </div>
+            <div class="timeline-step" id="tStep-Verified">
+              <div class="timeline-dot">5</div>
+              <div class="timeline-label">Verified</div>
+            </div>
+            <div class="timeline-step" id="tStep-Closed">
+              <div class="timeline-dot">6</div>
+              <div class="timeline-label">Closed</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Ticket Details Grid -->
+        <div class="grid-2" style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border-color);">
+          <div>
+            <h4 style="font-size: 0.95rem; margin-bottom: 0.5rem;">Agency Jurisdiction Analysis</h4>
+            <p style="font-size: 0.9rem; color: var(--text-body); margin-bottom: 0.5rem;" id="detailAgencyReason">
+              Auto-routed based on Delhi asset classification matrix.
+            </p>
+            <div style="font-size: 0.85rem; color: var(--text-muted);" id="detailRoadType">Road Type: Colony Lane (&lt;60ft)</div>
+            <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.35rem;" id="detailDesc">Description: ...</div>
+
+            <!-- Escalation Notice -->
+            <div id="escalationNotice" style="display: none; margin-top: 1rem; padding: 0.75rem; background-color: var(--primary-light); border: 1px solid rgba(13, 92, 58, 0.2); border-radius: var(--radius-sm); font-size: 0.85rem; color: var(--primary);">
+              <strong>Escalated:</strong> Priority alert dispatched to Agency Nodal Officer via TinyFish Web Agent.
+            </div>
+          </div>
+
+          <!-- Actions & Photo -->
+          <div style="display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+              <h4 style="font-size: 0.95rem; margin-bottom: 0.5rem;">Filed Photo Evidence</h4>
+              <div style="width: 100%; height: 160px; border-radius: var(--radius-sm); overflow: hidden; border: 1px solid var(--border-color); background: var(--bg-subtle);">
+                <img id="detailBeforeImg" src="" alt="Civic complaint before photo" style="width: 100%; height: 100%; object-fit: cover;">
+              </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div style="margin-top: 1.25rem; display: flex; gap: 0.75rem; flex-wrap: wrap;">
+              <button type="button" id="escalateTicketBtn" class="btn btn-outline btn-sm" style="border-radius: var(--radius-pill);">
+                Escalate Unresolved Complaint
+              </button>
+              <a href="#" id="verifyResolutionLinkBtn" class="btn btn-primary btn-sm" style="display: none; border-radius: var(--radius-pill);">
+                Verify Resolution &rarr;
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Live Delhi Map with Indicator Pins -->
+      <div class="card" style="padding: 1.5rem; margin-bottom: 2.5rem;">
+        <div style="margin-bottom: 1rem;">
+          <h3 style="font-size: 1.25rem; margin-bottom: 0.2rem;">Live Delhi NCT Grievance Map</h3>
+          <p style="font-size: 0.88rem; color: var(--text-body); margin: 0;">
+            Geospatial issue distribution across Delhi. Markers update in real time.
+          </p>
+        </div>
+
+        <div class="map-container-wrapper">
+          <div id="trackDelhiMap" class="delhi-map-box"></div>
+          <div class="map-legend-bar">
+            <div class="legend-items">
+              <span class="legend-pill"><span class="legend-dot dot-red"></span> Red: Issue Not Solved</span>
+              <span class="legend-pill"><span class="legend-dot dot-yellow"></span> Yellow: Work in Process</span>
+              <span class="legend-pill"><span class="legend-dot dot-green"></span> Green: Issue Solved &amp; Verified</span>
+            </div>
+            <div style="font-size: 0.8rem; color: var(--text-muted);">
+              Click any pin to inspect ticket details
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Complaints List -->
+      <div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+          <h3 style="font-size: 1.25rem;">My Complaints &amp; Delhi Grid Feed</h3>
+          <span style="font-size: 0.85rem; color: var(--text-muted);" id="complaintCountText">Loading tickets...</span>
+        </div>
+
+        <div class="complaints-table-container">
+          <table class="styled-table" id="complaintsTable">
+            <thead>
+              <tr>
+                <th>Reference ID</th>
+                <th>Category</th>
+                <th>Agency</th>
+                <th>Location</th>
+                <th>Status Indicator</th>
+                <th>Date</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="complaintsTableBody">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Site Footer -->
+  <footer class="site-footer">
+    <div class="container footer-content">
+      <div class="footer-team-title">CivicConnect • Team HackX</div>
+      <div class="footer-members">Tanmay Aggarwal, Angel, Sujeet Verma</div>
+      <div class="footer-meta">VIPS-TC • HackIIITD 2026 • ESYA '26</div>
+      <div style="margin-top: 0.65rem;">
+        <span class="badge" style="background: rgba(255,255,255,0.1); color: #F8FAFC; font-size: 0.75rem; border: 1px solid rgba(255,255,255,0.2); padding: 0.25rem 0.65rem;" id="firebaseStatusBadge">
+          🔥 Connected to Firebase (civicconnect11)
+        </span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Leaflet Map JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script type="module" src="js/firebase-init.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/chatbot.js"></script>
+
+  <script>
+    let activeComplaint = null;
+    let trackMap = null;
+    let trackMapMarkers = null;
+
+    document.addEventListener("DOMContentLoaded", () => {
+      initTrackMap();
+      renderComplaintsTable();
+
+      const params = new URLSearchParams(window.location.search);
+      const queryId = params.get("id");
+      if (queryId) {
+        displayTicketById(queryId);
+      } else {
+        const list = getComplaints();
+        if (list.length > 0) {
+          displayTicket(list[0]);
+        }
+      }
+
+      const searchForm = document.getElementById("trackSearchForm");
+      searchForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const idInput = document.getElementById("searchRefInput").value.trim();
+        if (idInput) {
+          displayTicketById(idInput);
+        }
+      });
+
+      document.getElementById("escalateTicketBtn").addEventListener("click", handleEscalateTicket);
+    });
+
+    function initTrackMap() {
+      const mapEl = document.getElementById("trackDelhiMap");
+      if (!mapEl || typeof L === "undefined") return;
+
+      trackMap = L.map("trackDelhiMap").setView([28.6250, 77.1950], 11);
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 19,
+        attribution: '&copy; OpenStreetMap'
+      }).addTo(trackMap);
+
+      trackMapMarkers = L.layerGroup().addTo(trackMap);
+      renderTrackMapPins();
+    }
+
+    function renderTrackMapPins() {
+      if (!trackMapMarkers) return;
+      trackMapMarkers.clearLayers();
+
+      const tickets = getComplaints();
+
+      tickets.forEach(t => {
+        const ind = getStatusIndicator(t.status);
+        const lat = t.coordinates ? t.coordinates.lat : 28.6139;
+        const lng = t.coordinates ? t.coordinates.lng : 77.2090;
+
+        const pinIcon = createMapPinIcon(ind.color);
+        const marker = L.marker([lat, lng], { icon: pinIcon });
+
+        const popupContent = `
+          <div style="font-family: var(--font-body); width: 220px; padding: 4px;">
+            <div style="width: 100%; height: 90px; border-radius: 4px; overflow: hidden; margin-bottom: 6px; background: #eee;">
+              <img src="${t.beforeImage || 'images/pothole.jpg'}" alt="issue photo" style="width: 100%; height: 100%; object-fit: cover;">
+            </div>
+            <div style="font-size: 0.75rem; font-weight: 700; color: var(--primary); text-transform: uppercase;">${t.agency} • ${t.id}</div>
+            <div style="font-weight: 700; font-size: 0.92rem; color: var(--text-dark); margin: 2px 0;">${t.categoryLabel}</div>
+            <div style="font-size: 0.8rem; color: var(--text-body); margin-bottom: 6px;">${t.locationText}</div>
+            <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #eee; padding-top: 6px;">
+              <span class="badge ${ind.badgeClass}">${t.status}</span>
+              <a href="javascript:void(0)" onclick="displayTicketById('${t.id}')" style="font-size: 0.8rem; font-weight: 700; color: var(--primary);">View Ticket &rarr;</a>
+            </div>
+          </div>
+        `;
+
+        marker.bindPopup(popupContent);
+        trackMapMarkers.addLayer(marker);
+      });
+    }
+
+    function renderComplaintsTable() {
+      const list = getComplaints();
+      const tbody = document.getElementById("complaintsTableBody");
+      document.getElementById("complaintCountText").textContent = `${list.length} grievances recorded`;
+      tbody.innerHTML = "";
+
+      list.forEach(c => {
+        const ind = getStatusIndicator(c.status);
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td><strong><a href="javascript:void(0)" onclick="displayTicketById('${c.id}')">${c.id}</a></strong></td>
+          <td>${c.categoryLabel || c.category}</td>
+          <td><span class="agency-badge" style="font-size: 0.72rem;">${c.agency}</span></td>
+          <td style="max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${c.locationText || "Delhi"}</td>
+          <td>
+            <span class="badge ${ind.badgeClass}">
+              <span class="legend-dot dot-${ind.color}" style="width: 8px; height: 8px; margin-right: 4px;"></span>
+              ${c.status}
+            </span>
+          </td>
+          <td>${c.date}</td>
+          <td>
+            <button class="btn btn-outline btn-sm" onclick="displayTicketById('${c.id}')" style="padding: 0.25rem 0.65rem; font-size: 0.75rem; border-radius: var(--radius-pill);">View</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function displayTicketById(id) {
+      const ticket = findComplaintById(id);
+      if (!ticket) {
+        alert(`Grievance Reference ID "${id}" was not found in records.`);
+        return;
+      }
+      displayTicket(ticket);
+    }
+
+    function displayTicket(ticket) {
+      activeComplaint = ticket;
+      const card = document.getElementById("activeTicketView");
+      card.style.display = "block";
+
+      const ind = getStatusIndicator(ticket.status);
+
+      document.getElementById("searchRefInput").value = ticket.id;
+      document.getElementById("detailRefId").textContent = ticket.id;
+      document.getElementById("detailAgency").textContent = `${ticket.agency} • ${ticket.agencyFullName}`;
+      document.getElementById("detailCategoryLocation").textContent = `${ticket.categoryLabel} • ${ticket.locationText}`;
+      document.getElementById("detailStatusBadge").innerHTML = `
+        <span class="badge ${ind.badgeClass}">
+          <span class="legend-dot dot-${ind.color}" style="width: 8px; height: 8px; margin-right: 4px;"></span>
+          ${ticket.status}
+        </span>
+      `;
+      document.getElementById("detailTimestamp").textContent = `Filed on ${ticket.date} at ${ticket.time || "10:00 AM"}`;
+      document.getElementById("detailAgencyReason").textContent = ticket.agencyReason;
+      document.getElementById("detailRoadType").textContent = `Road Classification: ${ticket.roadTypeLabel || ticket.roadType}`;
+      document.getElementById("detailDesc").textContent = `Description: ${ticket.description}`;
+
+      const beforeImg = document.getElementById("detailBeforeImg");
+      if (ticket.beforeImage) {
+        beforeImg.src = ticket.beforeImage;
+        beforeImg.parentElement.style.display = "block";
+      } else {
+        beforeImg.parentElement.style.display = "none";
+      }
+
+      const escNotice = document.getElementById("escalationNotice");
+      const escBtn = document.getElementById("escalateTicketBtn");
+      if (ticket.escalated) {
+        escNotice.style.display = "block";
+        escBtn.textContent = "Escalated to Nodal Officer";
+        escBtn.disabled = true;
+      } else {
+        escNotice.style.display = "none";
+        escBtn.textContent = "Escalate Unresolved Complaint";
+        escBtn.disabled = ticket.status === "Closed";
+      }
+
+      const verifyLinkBtn = document.getElementById("verifyResolutionLinkBtn");
+      if (ticket.status === "Repaired" || ticket.status === "In Progress") {
+        verifyLinkBtn.style.display = "inline-flex";
+        verifyLinkBtn.href = `verify.html?id=${ticket.id}`;
+      } else {
+        verifyLinkBtn.style.display = "none";
+      }
+
+      updateTimelineUI(ticket.status);
+
+      if (trackMap && ticket.coordinates) {
+        trackMap.setView([ticket.coordinates.lat, ticket.coordinates.lng], 14);
+      }
+
+      card.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+
+    function updateTimelineUI(status) {
+      const stepMap = {
+        "Filed": 0,
+        "Assigned": 1,
+        "In Progress": 2,
+        "Repaired": 3,
+        "Verified": 4,
+        "Closed": 5
+      };
+
+      const currentIdx = stepMap[status] !== undefined ? stepMap[status] : 0;
+      const domIds = ["tStep-Filed", "tStep-Assigned", "tStep-InProgress", "tStep-Repaired", "tStep-Verified", "tStep-Closed"];
+
+      domIds.forEach((id, index) => {
+        const el = document.getElementById(id);
+        el.classList.remove("active", "done");
+        if (index < currentIdx) {
+          el.classList.add("done");
+        } else if (index === currentIdx) {
+          el.classList.add("active");
+        }
+      });
+    }
+
+    function handleEscalateTicket() {
+      if (!activeComplaint) return;
+      if (activeComplaint.status === "Closed") {
+        alert("This complaint has already been resolved and closed.");
+        return;
+      }
+
+      activeComplaint.escalated = true;
+      updateComplaint(activeComplaint);
+
+      document.getElementById("escalationNotice").style.display = "block";
+      const escBtn = document.getElementById("escalateTicketBtn");
+      escBtn.textContent = "Escalated to Nodal Officer";
+      escBtn.disabled = true;
+
+      alert(`Complaint ${activeComplaint.id} has been escalated! TinyFish agent has transmitted an emergency SLA escalation ping to the ${activeComplaint.agency} Nodal Grievance Officer.`);
+    }
+  </script>
+</body>
+</html>

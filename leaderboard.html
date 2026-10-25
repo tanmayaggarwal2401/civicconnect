@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate, max-age=0">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>Citizen Leaderboard &amp; Badges | CivicConnect Delhi</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* Leaderboard Page Specific Styles */
+    .leaderboard-hero-banner {
+      background: linear-gradient(135deg, #0D5C3A 0%, #15803D 100%);
+      color: #ffffff;
+      border-radius: var(--radius-lg);
+      padding: 2.5rem 2rem;
+      margin-bottom: 2.5rem;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(13, 92, 58, 0.25);
+    }
+
+    .leaderboard-hero-banner::after {
+      content: "";
+      position: absolute;
+      right: -20px;
+      bottom: -40px;
+      width: 220px;
+      height: 220px;
+      background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    /* User Civic Passport Card */
+    .user-passport-card {
+      background: #ffffff;
+      border: 2px solid rgba(13, 92, 58, 0.2);
+      border-radius: var(--radius-md);
+      padding: 1.5rem;
+      margin-bottom: 2.5rem;
+      box-shadow: var(--shadow-md);
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    @media (min-width: 768px) {
+      .user-passport-card {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+      }
+    }
+
+    .passport-left {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+    }
+
+    .passport-avatar-circle {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #0D5C3A, #10B981);
+      color: #ffffff;
+      font-weight: 800;
+      font-size: 1.35rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(13, 92, 58, 0.3);
+      flex-shrink: 0;
+    }
+
+    .passport-progress-bar {
+      width: 100%;
+      max-width: 320px;
+      height: 10px;
+      background: var(--bg-subtle);
+      border-radius: var(--radius-pill);
+      overflow: hidden;
+      margin-top: 0.4rem;
+      border: 1px solid var(--border-color);
+    }
+
+    .passport-progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #10B981, #0D5C3A);
+      border-radius: var(--radius-pill);
+      transition: width 0.4s ease;
+    }
+
+    /* Badge Showcase 4-Grid */
+    .badge-tiers-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.25rem;
+      margin-bottom: 2.5rem;
+    }
+
+    @media (min-width: 640px) {
+      .badge-tiers-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .badge-tiers-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+
+    .badge-tier-card {
+      background: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 1.35rem;
+      text-align: center;
+      box-shadow: var(--shadow-sm);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      position: relative;
+    }
+
+    .badge-tier-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .badge-card-diamond { border-top: 4px solid #2563EB; }
+    .badge-card-gold { border-top: 4px solid #D97706; }
+    .badge-card-silver { border-top: 4px solid #64748B; }
+    .badge-card-bronze { border-top: 4px solid #92400E; }
+
+    .tier-icon-circle {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      margin: 0 auto 0.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.6rem;
+    }
+
+    .icon-diamond { background: #EFF6FF; }
+    .icon-gold { background: #FEF3C7; }
+    .icon-silver { background: #F1F5F9; }
+    .icon-bronze { background: #FFFBEB; }
+
+    /* Top 3 Podium */
+    .podium-container {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.25rem;
+      margin-bottom: 2.5rem;
+    }
+
+    @media (min-width: 768px) {
+      .podium-container {
+        grid-template-columns: 1fr 1.15fr 1fr;
+        align-items: flex-end;
+      }
+    }
+
+    .podium-card {
+      background: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 1.5rem 1.25rem;
+      text-align: center;
+      box-shadow: var(--shadow-sm);
+      position: relative;
+    }
+
+    .podium-first {
+      border: 2px solid #D97706;
+      background: linear-gradient(180deg, #FFFDF5 0%, #FFFFFF 100%);
+      box-shadow: 0 10px 25px rgba(217, 119, 6, 0.15);
+      order: 1;
+    }
+
+    @media (min-width: 768px) {
+      .podium-second { order: 1; }
+      .podium-first { order: 2; padding-top: 2.25rem; padding-bottom: 2.25rem; }
+      .podium-third { order: 3; }
+    }
+
+    .podium-rank-tag {
+      position: absolute;
+      top: -14px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      color: #ffffff;
+      font-size: 0.9rem;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+    }
+
+    .rank-first-tag { background: #D97706; }
+    .rank-second-tag { background: #64748B; }
+    .rank-third-tag { background: #92400E; }
+
+    /* Badge Pills */
+    .badge-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.25rem 0.65rem;
+      border-radius: var(--radius-pill);
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+
+    .badge-diamond {
+      background: #EFF6FF;
+      color: #1D4ED8;
+      border: 1px solid #BFDBFE;
+    }
+
+    .badge-gold {
+      background: #FEF3C7;
+      color: #B45309;
+      border: 1px solid #FDE68A;
+    }
+
+    .badge-silver {
+      background: #F1F5F9;
+      color: #475569;
+      border: 1px solid #CBD5E1;
+    }
+
+    .badge-bronze {
+      background: #FFFBEB;
+      color: #92400E;
+      border: 1px solid #FCD34D;
+    }
+
+    /* Leaderboard Table Row Styling */
+    .tr-current-user {
+      background-color: #F0FDF4 !important;
+      font-weight: 600;
+      border-left: 4px solid var(--primary);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Site Navigation -->
+  <header class="site-header">
+    <div class="container navbar">
+      <a href="index.html" class="brand-link">
+        <span class="brand-logo-pin">
+          <svg viewBox="0 0 24 24" width="28" height="28" fill="none">
+            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" fill="#0D5C3A"/>
+            <circle cx="12" cy="9" r="2.5" fill="#ffffff"/>
+          </svg>
+        </span>
+        <span class="brand-name">CivicConnect</span>
+        <span class="brand-badge">Delhi NCT</span>
+      </a>
+
+      <button id="navToggle" class="nav-toggle" aria-label="Toggle Navigation">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+
+      <ul id="navMenu" class="nav-menu">
+        <li class="nav-item"><a href="index.html">Home</a></li>
+        <li class="nav-item"><a href="report.html">Report Issue</a></li>
+        <li class="nav-item"><a href="track.html">Track</a></li>
+        <li class="nav-item active"><a href="leaderboard.html">Leaderboard</a></li>
+        <li class="nav-item"><a href="verify.html">Verify Resolution</a></li>
+        <li class="nav-item"><a href="admin-login.html" class="nav-admin-link">Govt Portal</a></li>
+        <li class="nav-item">
+          <a href="report.html" class="nav-action-btn">+ File Issue</a>
+        </li>
+      </ul>
+    </div>
+  </header>
+
+  <main class="section" style="padding-top: 2rem;">
+    <div class="container">
+      
+      <!-- Leaderboard Hero Banner -->
+      <div class="leaderboard-hero-banner">
+        <div style="max-width: 650px;">
+          <h1 style="color: #ffffff; font-size: 2.25rem; margin-bottom: 0.75rem;">Delhi Citizen Civic Leaderboard</h1>
+          <p style="color: #E2E8F0; font-size: 0.98rem; line-height: 1.6; margin: 0;">
+            Honoring residents who report hazardous potholes, overflowing drains, and garbage dumps. Every verified report earns Civic Points to unlock Bronze, Silver, Gold, and Diamond Guardian badges.
+          </p>
+        </div>
+      </div>
+
+      <!-- User's Live Civic Passport Card -->
+      <div class="user-passport-card">
+        <div class="passport-left">
+          <div class="passport-avatar-circle" id="userPassportAvatar">YOU</div>
+          <div>
+            <div style="font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: var(--text-muted);">Your Civic Passport</div>
+            <h3 style="font-size: 1.25rem; margin: 0.15rem 0;" id="userPassportName">You (Active Citizen)</h3>
+            <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+              <span id="userPassportBadge" class="badge-pill badge-bronze">🥉 Bronze Contributor</span>
+              <span style="font-size: 0.85rem; color: var(--text-body);" id="userPassportStats">2 Reports &bull; 1 Verified</span>
+            </div>
+            
+            <div style="margin-top: 0.4rem;">
+              <div style="font-size: 0.75rem; color: var(--text-muted); display: flex; justify-content: space-between; max-width: 320px;">
+                <span id="userPointsText">250 Civic Points</span>
+                <span id="userNextBadgeText">250 pts to Silver Active Citizen</span>
+              </div>
+              <div class="passport-progress-bar">
+                <div id="userProgressBar" class="passport-progress-fill" style="width: 50%;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 0.65rem; align-items: center; flex-wrap: wrap;">
+          <a href="report.html" class="btn btn-primary" style="border-radius: var(--radius-pill); font-size: 0.88rem; padding: 0.65rem 1.25rem;">
+            + Report Issue (+100 Pts)
+          </a>
+          <a href="verify.html" class="btn btn-outline" style="border-radius: var(--radius-pill); font-size: 0.88rem; padding: 0.65rem 1.25rem;">
+            Verify Repair (+150 Pts)
+          </a>
+        </div>
+      </div>
+
+      <!-- 4-Tier Badge System Grid -->
+      <div class="section-header" style="text-align: left; margin-bottom: 1.25rem;">
+        <h2 style="font-size: 1.5rem; margin-bottom: 0.25rem;">Civic Badge Tiers</h2>
+        <p style="font-size: 0.9rem;">Points and badges earned through verified reporting on official Delhi NCT portals.</p>
+      </div>
+
+      <div class="badge-tiers-grid">
+        <!-- Diamond -->
+        <div class="badge-tier-card badge-card-diamond">
+          <div class="tier-icon-circle icon-diamond">💎</div>
+          <h3 style="font-size: 1.1rem; color: #1D4ED8; margin-bottom: 0.25rem;">Diamond Guardian</h3>
+          <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); margin-bottom: 0.65rem;">1,500+ Civic Points</div>
+          <p style="font-size: 0.82rem; color: var(--text-body); margin: 0;">
+            15+ verified reports. Delhi NCT City Hall Honor Roll recognition &amp; direct municipal escalations.
+          </p>
+        </div>
+
+        <!-- Gold -->
+        <div class="badge-tier-card badge-card-gold">
+          <div class="tier-icon-circle icon-gold">🥇</div>
+          <h3 style="font-size: 1.1rem; color: #B45309; margin-bottom: 0.25rem;">Gold Champion</h3>
+          <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); margin-bottom: 0.65rem;">1,000–1,499 Points</div>
+          <p style="font-size: 0.82rem; color: var(--text-body); margin: 0;">
+            10–14 verified reports. Neighborhood champion with prioritized MCD &amp; PWD field crew deployment.
+          </p>
+        </div>
+
+        <!-- Silver -->
+        <div class="badge-tier-card badge-card-silver">
+          <div class="tier-icon-circle icon-silver">🥈</div>
+          <h3 style="font-size: 1.1rem; color: #475569; margin-bottom: 0.25rem;">Silver Active</h3>
+          <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); margin-bottom: 0.65rem;">500–999 Points</div>
+          <p style="font-size: 0.82rem; color: var(--text-body); margin: 0;">
+            5–9 verified reports. Active neighborhood guardian with community AI verification privileges.
+          </p>
+        </div>
+
+        <!-- Bronze -->
+        <div class="badge-tier-card badge-card-bronze">
+          <div class="tier-icon-circle icon-bronze">🥉</div>
+          <h3 style="font-size: 1.1rem; color: #92400E; margin-bottom: 0.25rem;">Bronze Contributor</h3>
+          <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); margin-bottom: 0.65rem;">100–499 Points</div>
+          <p style="font-size: 0.82rem; color: var(--text-body); margin: 0;">
+            1–4 verified reports. Registered citizen reporter making their first direct civic impact in Delhi.
+          </p>
+        </div>
+      </div>
+
+      <!-- Top 3 Podium Cards -->
+      <div class="section-header" style="text-align: left; margin-bottom: 1.5rem;">
+        <h2 style="font-size: 1.5rem; margin-bottom: 0.25rem;">Delhi NCT Top Civic Champions</h2>
+        <p style="font-size: 0.9rem;">Leading citizen guardians holding municipal agencies accountable across Delhi.</p>
+      </div>
+
+      <div class="podium-container" id="podiumContainer">
+        <!-- Rendered via JS -->
+      </div>
+
+      <!-- Full Leaderboard Table Section -->
+      <div class="card" style="padding: 1.5rem; margin-bottom: 2.5rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <h3 style="font-size: 1.25rem; margin-bottom: 0.2rem;">All Delhi Active Citizens</h3>
+            <p style="font-size: 0.88rem; color: var(--text-body); margin: 0;">
+              Filter rankings by badge tier, zone, or search by citizen name.
+            </p>
+          </div>
+        </div>
+
+        <!-- Filter Bar -->
+        <div class="admin-filter-bar">
+          <div class="admin-search-box">
+            <input type="text" id="leaderboardSearch" class="form-control" placeholder="Search by citizen name, locality or road..." style="padding: 0.55rem 0.85rem; font-size: 0.88rem;">
+          </div>
+
+          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+            <select id="tierFilterSelect" class="form-select" style="padding: 0.55rem 0.85rem; font-size: 0.88rem; width: auto;">
+              <option value="all">All Badge Tiers</option>
+              <option value="Diamond">💎 Diamond (1500+ pts)</option>
+              <option value="Gold">🥇 Gold (1000-1499 pts)</option>
+              <option value="Silver">🥈 Silver (500-999 pts)</option>
+              <option value="Bronze">🥉 Bronze (100-499 pts)</option>
+            </select>
+
+            <select id="zoneFilterSelect" class="form-select" style="padding: 0.55rem 0.85rem; font-size: 0.88rem; width: auto;">
+              <option value="all">All Delhi Zones</option>
+              <option value="South Delhi">South Delhi</option>
+              <option value="North Delhi">North Delhi</option>
+              <option value="East Delhi">East Delhi</option>
+              <option value="West Delhi">West Delhi</option>
+              <option value="Central Delhi">Central Delhi</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Leaderboard Table -->
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th style="width: 70px;">Rank</th>
+                <th>Citizen Name</th>
+                <th>Delhi Zone</th>
+                <th>Reports Filed</th>
+                <th>AI Verified</th>
+                <th>Civic Points</th>
+                <th>Earned Badge</th>
+                <th>Notable Contribution</th>
+              </tr>
+            </thead>
+            <tbody id="leaderboardTbody">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- How Points Work Infobox -->
+      <div class="card" style="padding: 1.5rem; background: var(--bg-subtle);">
+        <h4 style="font-size: 1.05rem; margin-bottom: 0.75rem; color: var(--text-dark);">How Civic Points &amp; Badges Are Earned</h4>
+        <div style="display: grid; grid-template-columns: 1fr; gap: 1rem;">
+          <div style="display: flex; gap: 0.75rem; align-items: flex-start;">
+            <span style="font-size: 1.25rem;">📸</span>
+            <div style="font-size: 0.88rem; color: var(--text-body);">
+              <strong>+100 Points per Reported Grievance:</strong> Upload clear photo evidence and pinpoint GPS location for automatic PostGIS routing to MCD, PWD, DJB, or DDA.
+            </div>
+          </div>
+          <div style="display: flex; gap: 0.75rem; align-items: flex-start;">
+            <span style="font-size: 1.25rem;">✅</span>
+            <div style="font-size: 0.88rem; color: var(--text-body);">
+              <strong>+150 Bonus Points per Resolution Verification:</strong> Review repair photos via AI pixel similarity (&ge;85%) and confirm ticket closure with citizen OTP.
+            </div>
+          </div>
+          <div style="display: flex; gap: 0.75rem; align-items: flex-start;">
+            <span style="font-size: 1.25rem;">🛡️</span>
+            <div style="font-size: 0.88rem; color: var(--text-body);">
+              <strong>Strict Fraud Prevention:</strong> Fake photo submissions or duplicate pins are flagged by PostGIS telemetry and deduct points.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Site Footer -->
+  <footer class="site-footer">
+    <div class="container footer-content">
+      <div class="footer-team-title">CivicConnect • Team HackX</div>
+      <div class="footer-members">Tanmay Aggarwal, Angel, Sujeet Verma</div>
+      <div class="footer-meta">VIPS-TC • HackIIITD 2026 • ESYA '26</div>
+      <div style="margin-top: 0.65rem;">
+        <span class="badge" style="background: rgba(255,255,255,0.1); color: #F8FAFC; font-size: 0.75rem; border: 1px solid rgba(255,255,255,0.2); padding: 0.25rem 0.65rem;" id="firebaseStatusBadge">
+          🔥 Connected to Firebase (civicconnect11)
+        </span>
+      </div>
+    </div>
+  </footer>
+
+  <script type="module" src="js/firebase-init.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/chatbot.js"></script>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      initLeaderboardPage();
+    });
+
+    function initLeaderboardPage() {
+      updateUserPassportUI();
+      renderPodium();
+      renderLeaderboardTable();
+
+      document.getElementById("leaderboardSearch").addEventListener("input", renderLeaderboardTable);
+      document.getElementById("tierFilterSelect").addEventListener("change", renderLeaderboardTable);
+      document.getElementById("zoneFilterSelect").addEventListener("change", renderLeaderboardTable);
+    }
+
+    function updateUserPassportUI() {
+      const user = getUserProfile();
+      const badge = user.badgeDetails || getBadgeDetails(user.points);
+
+      document.getElementById("userPassportName").textContent = user.name;
+      document.getElementById("userPassportAvatar").textContent = user.avatar || "YOU";
+      document.getElementById("userPassportStats").textContent = `${user.reports} Reports • ${user.verified || 0} Verified`;
+      document.getElementById("userPointsText").textContent = `${user.points} Civic Points`;
+
+      const badgeEl = document.getElementById("userPassportBadge");
+      badgeEl.className = `badge-pill ${badge.cssClass}`;
+      badgeEl.innerHTML = `${badge.icon} ${badge.title}`;
+
+      if (badge.nextGoal) {
+        document.getElementById("userNextBadgeText").textContent = `${badge.pointsToNext} pts to ${badge.nextGoal}`;
+        let currentTierMin = 0;
+        let nextTierMin = 500;
+        if (badge.tier === "Silver") { currentTierMin = 500; nextTierMin = 1000; }
+        if (badge.tier === "Gold") { currentTierMin = 1000; nextTierMin = 1500; }
+        
+        const progress = Math.min(100, Math.max(10, ((user.points - currentTierMin) / (nextTierMin - currentTierMin)) * 100));
+        document.getElementById("userProgressBar").style.width = `${progress}%`;
+      } else {
+        document.getElementById("userNextBadgeText").textContent = "🏆 Top Tier Achieved!";
+        document.getElementById("userProgressBar").style.width = "100%";
+      }
+    }
+
+    function renderPodium() {
+      const fullList = getFullLeaderboard();
+      const top3 = fullList.slice(0, 3);
+      if (top3.length < 3) return;
+
+      const first = top3[0];
+      const second = top3[1];
+      const third = top3[2];
+
+      const container = document.getElementById("podiumContainer");
+      container.innerHTML = `
+        <!-- 2nd Place -->
+        <div class="podium-card podium-second">
+          <div class="podium-rank-tag rank-second-tag">2</div>
+          <div style="font-size: 1.8rem; margin-bottom: 0.35rem;">🥈</div>
+          <h4 style="font-size: 1.15rem; margin-bottom: 0.15rem;">${second.name}</h4>
+          <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.5rem;">${second.locality} (${second.zone})</div>
+          <div style="margin-bottom: 0.5rem;">
+            <span class="badge-pill ${second.badgeDetails.cssClass}">${second.badgeDetails.icon} ${second.badgeDetails.tier}</span>
+          </div>
+          <div style="font-size: 1.25rem; font-weight: 800; color: var(--primary);">${second.points} <span style="font-size: 0.8rem; font-weight: 500;">pts</span></div>
+          <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 0.25rem;">${second.reports} Reports • ${second.verified} Verified</div>
+        </div>
+
+        <!-- 1st Place -->
+        <div class="podium-card podium-first">
+          <div class="podium-rank-tag rank-first-tag">1</div>
+          <div style="font-size: 2.2rem; margin-bottom: 0.35rem;">👑</div>
+          <h4 style="font-size: 1.35rem; margin-bottom: 0.15rem; color: #B45309;">${first.name}</h4>
+          <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.65rem;">${first.locality} (${first.zone})</div>
+          <div style="margin-bottom: 0.65rem;">
+            <span class="badge-pill ${first.badgeDetails.cssClass}" style="padding: 0.35rem 0.85rem; font-size: 0.82rem;">${first.badgeDetails.icon} ${first.badgeDetails.title}</span>
+          </div>
+          <div style="font-size: 1.6rem; font-weight: 800; color: #D97706;">${first.points} <span style="font-size: 0.85rem; font-weight: 600;">pts</span></div>
+          <div style="font-size: 0.82rem; color: var(--text-muted); margin-top: 0.35rem;">${first.reports} Reports Filed • ${first.verified} Verified Closures</div>
+        </div>
+
+        <!-- 3rd Place -->
+        <div class="podium-card podium-third">
+          <div class="podium-rank-tag rank-third-tag">3</div>
+          <div style="font-size: 1.8rem; margin-bottom: 0.35rem;">🥉</div>
+          <h4 style="font-size: 1.15rem; margin-bottom: 0.15rem;">${third.name}</h4>
+          <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.5rem;">${third.locality} (${third.zone})</div>
+          <div style="margin-bottom: 0.5rem;">
+            <span class="badge-pill ${third.badgeDetails.cssClass}">${third.badgeDetails.icon} ${third.badgeDetails.tier}</span>
+          </div>
+          <div style="font-size: 1.25rem; font-weight: 800; color: var(--primary);">${third.points} <span style="font-size: 0.8rem; font-weight: 500;">pts</span></div>
+          <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 0.25rem;">${third.reports} Reports • ${third.verified} Verified</div>
+        </div>
+      `;
+    }
+
+    function renderLeaderboardTable() {
+      const fullList = getFullLeaderboard();
+      const searchQuery = (document.getElementById("leaderboardSearch").value || "").toLowerCase().trim();
+      const selectedTier = document.getElementById("tierFilterSelect").value;
+      const selectedZone = document.getElementById("zoneFilterSelect").value;
+
+      const tbody = document.getElementById("leaderboardTbody");
+      tbody.innerHTML = "";
+
+      const filtered = fullList.filter(item => {
+        if (selectedTier !== "all" && item.badgeTier !== selectedTier) return false;
+        if (selectedZone !== "all" && item.zone !== selectedZone) return false;
+        if (searchQuery) {
+          const matchName = item.name.toLowerCase().includes(searchQuery);
+          const matchLoc = (item.locality || "").toLowerCase().includes(searchQuery);
+          const matchZone = (item.zone || "").toLowerCase().includes(searchQuery);
+          if (!matchName && !matchLoc && !matchZone) return false;
+        }
+        return true;
+      });
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; padding: 2rem; color: var(--text-muted);">No citizens match the selected filters.</td></tr>`;
+        return;
+      }
+
+      filtered.forEach(item => {
+        const tr = document.createElement("tr");
+        if (item.isCurrentUser) {
+          tr.className = "tr-current-user";
+        }
+
+        let rankBadge = `<strong>#${item.rank}</strong>`;
+        if (item.rank === 1) rankBadge = `🥇 <strong>#1</strong>`;
+        else if (item.rank === 2) rankBadge = `🥈 <strong>#2</strong>`;
+        else if (item.rank === 3) rankBadge = `🥉 <strong>#3</strong>`;
+
+        tr.innerHTML = `
+          <td>${rankBadge}</td>
+          <td>
+            <div style="display: flex; align-items: center; gap: 0.65rem;">
+              <div style="width: 32px; height: 32px; border-radius: 50%; background: ${item.isCurrentUser ? 'var(--primary)' : '#E2E8F0'}; color: ${item.isCurrentUser ? '#fff' : 'var(--text-dark)'}; font-size: 0.75rem; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                ${item.avatar || 'CT'}
+              </div>
+              <div>
+                <div style="font-weight: 700;">${item.name} ${item.isCurrentUser ? '<span class="badge badge-solved" style="font-size: 0.65rem; padding: 0.15rem 0.4rem;">YOU</span>' : ''}</div>
+                <div style="font-size: 0.78rem; color: var(--text-muted);">${item.locality || item.zone}</div>
+              </div>
+            </div>
+          </td>
+          <td><span style="font-size: 0.85rem;">${item.zone}</span></td>
+          <td><strong>${item.reports}</strong></td>
+          <td><span style="color: #059669; font-weight: 700;">${item.verified || 0}</span></td>
+          <td><strong style="color: var(--primary); font-size: 0.95rem;">${item.points} pts</strong></td>
+          <td>
+            <span class="badge-pill ${item.badgeDetails.cssClass}">
+              ${item.badgeDetails.icon} ${item.badgeDetails.title}
+            </span>
+          </td>
+          <td style="font-size: 0.8rem; color: var(--text-body); max-width: 220px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+            ${item.topContribution || "Active Delhi civic contributor"}
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+  </script>
+</body>
+</html>

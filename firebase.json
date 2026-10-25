@@ -1,0 +1,85 @@
+{
+  "hosting": {
+    "public": ".",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**",
+      "**/*.bat",
+      "**/*.cmd",
+      "**/*.sh",
+      "**/*.exe",
+      "package.json",
+      "package-lock.json",
+      "server.js",
+      "extracted_zip/**"
+    ],
+    "cleanUrls": true,
+    "trailingSlash": false,
+    "headers": [
+      {
+        "source": "**",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "no-cache, no-store, must-revalidate, max-age=0"
+          },
+          {
+            "key": "Pragma",
+            "value": "no-cache"
+          },
+          {
+            "key": "Expires",
+            "value": "0"
+          }
+        ]
+      }
+    ],
+    "rewrites": [
+      {
+        "source": "/login",
+        "destination": "/admin-login.html"
+      },
+      {
+        "source": "/admin-login",
+        "destination": "/admin-login.html"
+      },
+      {
+        "source": "/mcd",
+        "destination": "/admin-mcd.html"
+      },
+      {
+        "source": "/pwd",
+        "destination": "/admin-pwd.html"
+      },
+      {
+        "source": "/djb",
+        "destination": "/admin-djb.html"
+      },
+      {
+        "source": "/dda",
+        "destination": "/admin-dda.html"
+      },
+      {
+        "source": "/admin",
+        "destination": "/admin.html"
+      },
+      {
+        "source": "/report",
+        "destination": "/report.html"
+      },
+      {
+        "source": "/track",
+        "destination": "/track.html"
+      },
+      {
+        "source": "/verify",
+        "destination": "/verify.html"
+      },
+      {
+        "source": "/leaderboard",
+        "destination": "/leaderboard.html"
+      }
+    ]
+  }
+}

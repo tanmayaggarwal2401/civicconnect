@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate, max-age=0">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>Report an Issue | CivicConnect Delhi</title>
+  <link rel="stylesheet" href="css/style.css">
+  <!-- Leaflet Map CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+  <style>
+    .report-layout {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+    @media (min-width: 900px) {
+      .report-layout {
+        grid-template-columns: 1.15fr 0.85fr;
+      }
+    }
+    .gov-callout-banner {
+      background: linear-gradient(135deg, #EBF5F0 0%, #F0FDF4 100%);
+      border: 1px solid rgba(13, 92, 58, 0.2);
+      border-radius: var(--radius-md);
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.25rem;
+      flex-wrap: wrap;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Site Navigation -->
+  <header class="site-header">
+    <div class="container navbar">
+      <a href="index.html" class="brand-link">
+        <span class="brand-logo-pin">
+          <svg viewBox="0 0 24 24" width="28" height="28" fill="none">
+            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" fill="#0D5C3A"/>
+            <circle cx="12" cy="9" r="2.5" fill="#ffffff"/>
+          </svg>
+        </span>
+        <span class="brand-name">CivicConnect</span>
+        <span class="brand-badge">Delhi NCT</span>
+      </a>
+
+      <button id="navToggle" class="nav-toggle" aria-label="Toggle Navigation">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+
+      <ul id="navMenu" class="nav-menu">
+        <li class="nav-item"><a href="index.html">Home</a></li>
+        <li class="nav-item active"><a href="report.html">Report Issue</a></li>
+        <li class="nav-item"><a href="track.html">Track</a></li>
+        <li class="nav-item"><a href="leaderboard.html">Leaderboard</a></li>
+        <li class="nav-item"><a href="verify.html">Verify Resolution</a></li>
+        <li class="nav-item"><a href="admin-login.html" class="nav-admin-link">Govt Portal</a></li>
+        <li class="nav-item">
+          <a href="report.html" class="nav-action-btn">+ File Issue</a>
+        </li>
+      </ul>
+    </div>
+  </header>
+
+  <main class="section">
+    <div class="container">
+      <!-- Civic Telemetry Callout Banner -->
+      <div class="gov-callout-banner">
+        <div>
+          <div style="font-family: var(--font-heading); font-weight: 700; color: var(--primary); font-size: 1.05rem; margin-bottom: 0.2rem;">
+            Automated PostGIS Delhi Grievance Ingestion
+          </div>
+          <div style="font-size: 0.88rem; color: var(--text-body);">
+            Upload photo evidence and confirm your Delhi GPS coordinates. The PostGIS router will identify MCD, PWD, DJB, or DDA jurisdiction automatically.
+          </div>
+        </div>
+        <a href="track.html" class="btn btn-outline btn-sm" style="border-radius: var(--radius-pill);">
+          View Active Map Pins &rarr;
+        </a>
+      </div>
+
+      <div class="section-header" style="text-align: left; margin-bottom: 1.5rem;">
+        <h2>Report a Civic Issue</h2>
+      </div>
+
+      <div class="report-layout">
+        <!-- Form Column -->
+        <div class="card">
+          <form id="grievanceForm">
+            <!-- 1. Category -->
+            <div class="form-group">
+              <label for="categorySelect" class="form-label">Issue Category <span class="req">*</span></label>
+              <select id="categorySelect" class="form-select" required>
+                <option value="pothole">Pothole / Road Damage</option>
+                <option value="drain">Drain / Overflowing Water Body</option>
+                <option value="garbage">Garbage / Unsanitary Dump</option>
+                <option value="damaged infrastructure">Damaged Infrastructure / Divider / Railing</option>
+              </select>
+            </div>
+
+            <!-- 2. Road Type Selector -->
+            <div class="form-group">
+              <label for="roadTypeSelect" class="form-label">Road &amp; Asset Classification <span class="req">*</span></label>
+              <select id="roadTypeSelect" class="form-select" required>
+                <option value="<60ft">Colony Lane / Street (&lt;60ft width)</option>
+                <option value="≥60ft">Arterial Road / Avenue / Highway (&ge;60ft width)</option>
+                <option value="sewer">Sewer Line / Underground Drain</option>
+                <option value="park">District Park / Green Belt</option>
+              </select>
+              <div class="form-help">Delhi municipal jurisdictions strictly depend on asset classification and road width.</div>
+            </div>
+
+            <!-- Auto-Route Notification Box -->
+            <div class="route-badge-box" id="agencyRouteBox">
+              <div class="agency-header">
+                <div>
+                  <div style="font-size: 0.75rem; text-transform: uppercase; font-weight: bold; color: var(--text-muted);">Auto-Routed Agency</div>
+                  <div class="agency-name" id="agencyNameText">MCD</div>
+                </div>
+                <span class="agency-badge" id="agencyTag">Automated Routing</span>
+              </div>
+              <p class="route-reason" id="agencyReasonText">Interior colony roads and lanes under 60 feet fall under MCD jurisdiction for asphalt patching and resurfacing.</p>
+            </div>
+
+            <!-- 3. Photo Upload / Capture -->
+            <div class="form-group">
+              <label class="form-label">Photo Evidence <span class="req">*</span></label>
+              <input type="file" id="photoInput" class="form-control" accept="image/*" capture="environment">
+              <div class="form-help">Take a clear photo with your phone camera or upload an image file.</div>
+              
+              <div style="margin-top: 0.5rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                <button type="button" id="loadSamplePhotoBtn" class="btn btn-outline btn-sm">Use Delhi Sample Photo</button>
+              </div>
+
+              <div class="image-preview-container">
+                <div class="image-preview-box">
+                  <img id="photoPreview" alt="Grievance evidence preview">
+                  <span id="previewPlaceholder" class="image-preview-placeholder">No photo selected</span>
+                </div>
+                <div style="font-size: 0.85rem; color: var(--text-muted);" id="photoStatusText">
+                  Upload an image to verify issue authenticity.
+                </div>
+              </div>
+            </div>
+
+            <!-- 4. Description -->
+            <div class="form-group">
+              <label for="issueDescription" class="form-label">Issue Description (Optional)</label>
+              <textarea id="issueDescription" class="form-textarea" rows="3" placeholder="Provide any landmark or specific hazard details..."></textarea>
+            </div>
+
+            <button type="submit" id="submitReportBtn" class="btn btn-primary btn-block" style="padding: 0.85rem; border-radius: var(--radius-pill);">
+              Submit to TinyFish Agent Grid &rarr;
+            </button>
+          </form>
+        </div>
+
+        <!-- Location & Map Column -->
+        <div>
+          <div class="card">
+            <h3 style="font-size: 1.15rem; margin-bottom: 0.5rem;">Incident Location</h3>
+            <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 0.75rem;">
+              Live location acquired via Geolocation API. Move the pin or click on the map to fine-tune the exact Delhi location.
+            </p>
+
+            <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
+              <button type="button" id="detectLocationBtn" class="btn btn-outline btn-sm" style="flex: 1;">
+                Re-detect Live GPS
+              </button>
+              <button type="button" id="usePresetDelhiBtn" class="btn btn-outline btn-sm" style="flex: 1;">
+                Reset Delhi Center
+              </button>
+            </div>
+
+            <!-- Map Container -->
+            <div id="map" class="map-box"></div>
+
+            <div class="geo-status">
+              <span id="geoCoords">Lat: 28.6139 | Lng: 77.2090</span>
+              <span id="geoAddress">Connaught Place, New Delhi</span>
+            </div>
+          </div>
+
+          <!-- Jurisdictional Guideline Card -->
+          <div class="card" style="margin-top: 1.5rem; background-color: var(--bg-subtle);">
+            <h4 style="font-size: 1rem; margin-bottom: 0.6rem; color: var(--text-dark);">Delhi Agency Matrix</h4>
+            <ul style="padding-left: 1.2rem; font-size: 0.85rem; color: var(--text-body); display: flex; flex-direction: column; gap: 0.4rem;">
+              <li><strong>MCD:</strong> Streets &amp; interior colony lanes under 60 feet.</li>
+              <li><strong>PWD:</strong> Arterial corridors, avenues, and highways 60 feet or wider.</li>
+              <li><strong>DJB:</strong> Water mains, open stormwater channels, and sewer networks.</li>
+              <li><strong>DDA:</strong> Master plan green belts and district parks.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- TinyFish Agent Progress Simulation Modal -->
+  <div id="agentModal" class="modal-overlay">
+    <div class="modal-window">
+      <div class="modal-header" style="display: flex; align-items: center; gap: 0.75rem; text-align: left;">
+        <img src="images/tinyfish-mascot.png" alt="TinyFish Agent" style="width: 44px; height: 44px; object-fit: contain; flex-shrink: 0;">
+        <div>
+          <h3 id="modalHeading" style="margin: 0; font-size: 1.2rem;">TinyFish Autonomous Agent</h3>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0;">Executing autonomous portal submission...</p>
+        </div>
+      </div>
+
+      <!-- Simulation Steps List -->
+      <ul class="agent-steps-list" id="agentStepsList">
+        <li class="agent-step-item" id="step1">
+          <span class="agent-step-status-icon">1</span>
+          <span>Navigating official agency portal...</span>
+        </li>
+        <li class="agent-step-item pending" id="step2">
+          <span class="agent-step-status-icon">2</span>
+          <span>Filling civic grievance form &amp; attaching telemetry...</span>
+        </li>
+        <li class="agent-step-item pending" id="step3">
+          <span class="agent-step-status-icon">3</span>
+          <span>Submitting authenticated grievance payload...</span>
+        </li>
+        <li class="agent-step-item pending" id="step4">
+          <span class="agent-step-status-icon">4</span>
+          <span>Extracting official reference ID...</span>
+        </li>
+      </ul>
+
+      <!-- Result View -->
+      <div id="modalResult" style="display: none; text-align: center; margin-top: 1.5rem;">
+        <div style="font-size: 0.85rem; text-transform: uppercase; font-weight: bold; color: var(--text-muted);">Official Grievance Registered</div>
+        <div style="font-size: 1.6rem; font-family: var(--font-heading); font-weight: 700; color: var(--primary); margin: 0.4rem 0;" id="generatedRefId">CC-DEL-2026-00000</div>
+        <p style="font-size: 0.9rem; color: var(--text-body); margin-bottom: 1.25rem;">
+          Status: <strong>Filed (🔴 Red Pin)</strong>. Telemetry synced to live Delhi map.
+        </p>
+
+        <!-- Citizen Leaderboard Reward Notification -->
+        <div id="rewardAlertBox" style="background: #EFF6FF; border: 1px solid #BFDBFE; border-radius: var(--radius-sm); padding: 0.85rem 1rem; margin-bottom: 1.5rem; text-align: left; display: flex; align-items: center; gap: 0.75rem;">
+          <span style="font-size: 1.6rem;">🏆</span>
+          <div style="flex: 1;">
+            <div style="font-weight: 700; color: #1E40AF; font-size: 0.92rem;">+100 Civic Points Earned!</div>
+            <div style="font-size: 0.78rem; color: #3B82F6;" id="rewardProfileText">Climbed the Delhi Citizen Leaderboard</div>
+          </div>
+          <a href="leaderboard.html" class="btn btn-outline btn-sm" style="font-size: 0.78rem; padding: 0.35rem 0.75rem; border-radius: var(--radius-pill); border-color: #3B82F6; color: #1D4ED8; white-space: nowrap; font-weight: 700;">Leaderboard &rarr;</a>
+        </div>
+
+        <div style="display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap;">
+          <a href="#" id="trackNewBtn" class="btn btn-primary btn-sm" style="border-radius: var(--radius-pill);">Track Complaint &rarr;</a>
+          <button type="button" id="closeModalBtn" class="btn btn-outline btn-sm" style="border-radius: var(--radius-pill);">File Another Issue</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Site Footer -->
+  <footer class="site-footer">
+    <div class="container footer-content">
+      <div class="footer-team-title">CivicConnect • Team HackX</div>
+      <div class="footer-members">Tanmay Aggarwal, Angel, Sujeet Verma</div>
+      <div class="footer-meta">VIPS-TC • HackIIITD 2026 • ESYA '26</div>
+      <div style="margin-top: 0.65rem;">
+        <span class="badge" style="background: rgba(255,255,255,0.1); color: #F8FAFC; font-size: 0.75rem; border: 1px solid rgba(255,255,255,0.2); padding: 0.25rem 0.65rem;" id="firebaseStatusBadge">
+          🔥 Connected to Firebase (civicconnect11)
+        </span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Leaflet Map JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script type="module" src="js/firebase-init.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/chatbot.js"></script>
+
+  <script>
+    let currentCoords = { lat: 28.6139, lng: 77.2090 };
+    let currentAddress = "Connaught Place, New Delhi";
+    let map = null;
+    let mapMarker = null;
+    let selectedImageBase64 = "";
+
+    const SAMPLE_PHOTOS = {
+      pothole: "images/pothole.jpg",
+      drain: "images/drain.jpg",
+      garbage: "images/garbage.jpg",
+      infrastructure: "images/infrastructure.jpg"
+    };
+
+    document.addEventListener("DOMContentLoaded", () => {
+      initMap();
+      setupEventListeners();
+      updateAgencyRouting();
+    });
+
+    function initMap() {
+      const mapContainer = document.getElementById("map");
+      if (!mapContainer) return;
+
+      try {
+        if (typeof L !== "undefined") {
+          map = L.map("map").setView([currentCoords.lat, currentCoords.lng], 13);
+          L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+            maxZoom: 19,
+            attribution: '&copy; OpenStreetMap'
+          }).addTo(map);
+
+          mapMarker = L.marker([currentCoords.lat, currentCoords.lng], { draggable: true }).addTo(map);
+
+          mapMarker.on("dragend", (e) => {
+            const pos = e.target.getLatLng();
+            updateLocationInfo(pos.lat, pos.lng, "Selected pin location, Delhi");
+          });
+
+          map.on("click", (e) => {
+            mapMarker.setLatLng(e.latlng);
+            updateLocationInfo(e.latlng.lat, e.latlng.lng, "Pin dropped, Delhi");
+          });
+        }
+      } catch (e) {
+        console.warn("Leaflet map initialization notice:", e);
+      }
+
+      detectUserLocation();
+    }
+
+    function updateLocationInfo(lat, lng, address) {
+      currentCoords = { lat: Number(lat.toFixed(5)), lng: Number(lng.toFixed(5)) };
+      currentAddress = address;
+      document.getElementById("geoCoords").textContent = `Lat: ${currentCoords.lat} | Lng: ${currentCoords.lng}`;
+      document.getElementById("geoAddress").textContent = currentAddress;
+    }
+
+    function detectUserLocation() {
+      if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const lat = position.coords.latitude;
+            const lng = position.coords.longitude;
+            updateLocationInfo(lat, lng, "Detected citizen GPS location");
+            if (map && mapMarker) {
+              map.setView([lat, lng], 15);
+              mapMarker.setLatLng([lat, lng]);
+            }
+          },
+          (err) => {
+            console.log("Geolocation notice (using Delhi default):", err.message);
+          },
+          { timeout: 7000 }
+        );
+      }
+    }
+
+    function setupEventListeners() {
+      const categorySelect = document.getElementById("categorySelect");
+      const roadTypeSelect = document.getElementById("roadTypeSelect");
+
+      categorySelect.addEventListener("change", () => {
+        if (categorySelect.value === "drain") {
+          roadTypeSelect.value = "sewer";
+        }
+        updateAgencyRouting();
+      });
+
+      roadTypeSelect.addEventListener("change", updateAgencyRouting);
+
+      const photoInput = document.getElementById("photoInput");
+      photoInput.addEventListener("change", handlePhotoUpload);
+
+      const sampleBtn = document.getElementById("loadSamplePhotoBtn");
+      sampleBtn.addEventListener("click", () => {
+        const cat = categorySelect.value;
+        let url = SAMPLE_PHOTOS.pothole;
+        if (cat === "drain") url = SAMPLE_PHOTOS.drain;
+        else if (cat === "garbage") url = SAMPLE_PHOTOS.garbage;
+        else if (cat === "damaged infrastructure") url = SAMPLE_PHOTOS.infrastructure;
+
+        selectedImageBase64 = url;
+        const preview = document.getElementById("photoPreview");
+        const placeholder = document.getElementById("previewPlaceholder");
+        preview.src = url;
+        preview.style.display = "block";
+        placeholder.style.display = "none";
+        document.getElementById("photoStatusText").textContent = "Delhi reference photo loaded.";
+      });
+
+      document.getElementById("detectLocationBtn").addEventListener("click", detectUserLocation);
+      document.getElementById("usePresetDelhiBtn").addEventListener("click", () => {
+        const defaultLat = 28.6139;
+        const defaultLng = 77.2090;
+        updateLocationInfo(defaultLat, defaultLng, "Connaught Place, New Delhi");
+        if (map && mapMarker) {
+          map.setView([defaultLat, defaultLng], 13);
+          mapMarker.setLatLng([defaultLat, defaultLng]);
+        }
+      });
+
+      const form = document.getElementById("grievanceForm");
+      form.addEventListener("submit", handleFormSubmit);
+
+      document.getElementById("closeModalBtn").addEventListener("click", () => {
+        document.getElementById("agentModal").classList.remove("active");
+        form.reset();
+        document.getElementById("photoPreview").style.display = "none";
+        document.getElementById("previewPlaceholder").style.display = "block";
+        selectedImageBase64 = "";
+        updateAgencyRouting();
+      });
+    }
+
+    function updateAgencyRouting() {
+      const roadType = document.getElementById("roadTypeSelect").value;
+      const category = document.getElementById("categorySelect").value;
+      const route = determineAgencyRoute(roadType, category);
+
+      document.getElementById("agencyNameText").textContent = `${route.agency} (${route.fullName})`;
+      document.getElementById("agencyReasonText").textContent = route.reason;
+    }
+
+    function handlePhotoUpload(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        selectedImageBase64 = event.target.result;
+        const preview = document.getElementById("photoPreview");
+        const placeholder = document.getElementById("previewPlaceholder");
+        preview.src = selectedImageBase64;
+        preview.style.display = "block";
+        placeholder.style.display = "none";
+        document.getElementById("photoStatusText").textContent = `Loaded: ${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function handleFormSubmit(e) {
+      e.preventDefault();
+
+      const categorySelect = document.getElementById("categorySelect");
+      const roadTypeSelect = document.getElementById("roadTypeSelect");
+      const description = document.getElementById("issueDescription").value.trim();
+
+      let finalImage = selectedImageBase64;
+      if (!finalImage) {
+        finalImage = SAMPLE_PHOTOS[categorySelect.value] || SAMPLE_PHOTOS.pothole;
+      }
+
+      const route = determineAgencyRoute(roadTypeSelect.value, categorySelect.value);
+      const newRefId = generateReferenceId();
+      const demoOtp = generateOtp();
+
+      const complaintData = {
+        id: newRefId,
+        date: new Date().toISOString().split("T")[0],
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        category: categorySelect.value,
+        categoryLabel: categorySelect.options[categorySelect.selectedIndex].text,
+        roadType: roadTypeSelect.value,
+        roadTypeLabel: roadTypeSelect.options[roadTypeSelect.selectedIndex].text,
+        agency: route.agency,
+        agencyFullName: route.fullName,
+        agencyReason: route.reason,
+        locationText: currentAddress,
+        coordinates: currentCoords,
+        status: "Filed", // Red pin
+        escalated: false,
+        description: description || "Citizen reported civic issue requiring immediate intervention.",
+        beforeImage: finalImage,
+        afterImage: "",
+        verificationScore: 0,
+        verified: false,
+        demoOtp: demoOtp
+      };
+
+      startTinyFishSimulation(complaintData);
+    }
+
+    function startTinyFishSimulation(complaintData) {
+      const modal = document.getElementById("agentModal");
+      const resultBox = document.getElementById("modalResult");
+      const stepsList = document.getElementById("agentStepsList");
+
+      for (let i = 1; i <= 4; i++) {
+        const stepEl = document.getElementById(`step${i}`);
+        stepEl.className = "agent-step-item pending";
+        stepEl.querySelector(".agent-step-status-icon").textContent = i;
+      }
+      resultBox.style.display = "none";
+      stepsList.style.display = "flex";
+      modal.classList.add("active");
+
+      setStepState(1, "running");
+
+      setTimeout(() => {
+        setStepState(1, "completed");
+        setStepState(2, "running");
+
+        setTimeout(() => {
+          setStepState(2, "completed");
+          setStepState(3, "running");
+
+          setTimeout(() => {
+            setStepState(3, "completed");
+            setStepState(4, "running");
+
+            setTimeout(() => {
+              setStepState(4, "completed");
+
+              saveComplaint(complaintData);
+
+              const updatedProfile = rewardUserReport();
+              document.getElementById("rewardProfileText").textContent = `Score: ${updatedProfile.points} pts • Earned Badge: ${updatedProfile.badgeTitle}`;
+
+              document.getElementById("generatedRefId").textContent = complaintData.id;
+              document.getElementById("trackNewBtn").href = `track.html?id=${complaintData.id}`;
+              resultBox.style.display = "block";
+            }, 700);
+          }, 800);
+        }, 750);
+      }, 700);
+    }
+
+    function setStepState(stepNum, state) {
+      const el = document.getElementById(`step${stepNum}`);
+      const icon = el.querySelector(".agent-step-status-icon");
+
+      el.className = `agent-step-item ${state}`;
+      if (state === "completed") {
+        icon.innerHTML = "&#10003;";
+      } else if (state === "running") {
+        icon.innerHTML = "";
+      } else {
+        icon.textContent = stepNum;
+      }
+    }
+  </script>
+</body>
+</html>

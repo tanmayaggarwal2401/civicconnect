@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate, max-age=0">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>CivicConnect – Intelligent Citizen-to-Agency Grid | Delhi</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Site Navigation -->
+  <header class="site-header">
+    <div class="container navbar">
+      <a href="index.html" class="brand-link">
+        <span class="brand-logo-pin">
+          <svg viewBox="0 0 24 24" width="28" height="28" fill="none">
+            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" fill="#0D5C3A"/>
+            <circle cx="12" cy="9" r="2.5" fill="#ffffff"/>
+          </svg>
+        </span>
+        <span class="brand-name">CivicConnect</span>
+        <span class="brand-badge">Delhi NCT</span>
+      </a>
+
+      <button id="navToggle" class="nav-toggle" aria-label="Toggle Navigation">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+
+      <ul id="navMenu" class="nav-menu">
+        <li class="nav-item active"><a href="index.html">Home</a></li>
+        <li class="nav-item"><a href="report.html">Report Issue</a></li>
+        <li class="nav-item"><a href="track.html">Track</a></li>
+        <li class="nav-item"><a href="leaderboard.html">Leaderboard</a></li>
+        <li class="nav-item"><a href="verify.html">Verify Resolution</a></li>
+        <li class="nav-item"><a href="admin-login.html" class="nav-admin-link">Govt Portal</a></li>
+        <li class="nav-item">
+          <a href="report.html" class="nav-action-btn">+ File Issue</a>
+        </li>
+      </ul>
+    </div>
+  </header>
+
+  <main>
+    <!-- Hero Section with Delhi Skyline Image and Floating Telemetry Cards -->
+    <section class="hero-section hero-skyline-bg">
+      <div class="container">
+        <div class="hero-grid">
+          <!-- Left Column Content -->
+          <div class="hero-content">
+            <div class="hero-eyebrow">Cleaner Streets &bull; Safer Communities &bull; A Smarter Delhi</div>
+            <h1 class="hero-title">
+              See a civic issue?
+              <span class="hero-title-highlight">Report it. We’ll handle the rest.</span>
+            </h1>
+            <p class="hero-description">
+              CivicConnect empowers Delhi residents to report potholes, waterlogging, garbage dumps, and damaged infrastructure. You snap a photo and set your location — our automated PostGIS router and TinyFish agents route, file, and track the complaint directly with MCD, PWD, DJB, and DDA.
+            </p>
+            <div class="hero-cta-group">
+              <a href="report.html" class="btn-hero-primary">
+                Report an Issue
+                <span style="font-size: 1.15rem; margin-left: 0.2rem;">&rarr;</span>
+              </a>
+
+              <a href="admin-login.html" class="btn-hero-secondary">
+                Govt Portal &rarr;
+              </a>
+            </div>
+          </div>
+
+          <!-- Right Column Visual: Interactive Floating Stage -->
+          <div class="hero-interactive-stage">
+            <!-- Connecting SVG Flow Curve -->
+            <svg class="hero-flow-svg" viewBox="0 0 420 420" fill="none">
+              <path d="M 180 85 C 130 140, 310 180, 240 240 C 190 280, 310 300, 260 340" stroke="#0D5C3A" stroke-width="2.5" stroke-dasharray="6 6" opacity="0.6"/>
+            </svg>
+
+            <!-- Floating Polaroid Lodhi Road photo -->
+            <div class="float-polaroid">
+              <img src="images/pothole.jpg" alt="Pothole reported on Lodhi Road" class="float-polaroid-img">
+              <div class="float-polaroid-footer">
+                <span class="float-polaroid-pin">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg>
+                  Lodhi Road, NDMC/PWD
+                </span>
+                <span style="color: var(--primary); font-weight: 700;">#DEL-8041</span>
+              </div>
+            </div>
+
+            <!-- Badge 1: AI + GIS Routing -->
+            <div class="float-pill-badge pill-routing">
+              <span class="float-pill-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+              </span>
+              <span>AI + GIS Routing</span>
+            </div>
+
+            <!-- Badge 2: Right Agency First Time -->
+            <div class="float-pill-badge pill-agency">
+              <span class="float-pill-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+              </span>
+              <span>Right Agency First Time</span>
+            </div>
+
+            <!-- Badge 3: Real Resolution Verified -->
+            <div class="float-pill-badge pill-resolution">
+              <span class="float-pill-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              </span>
+              <span>Real Resolution Verified</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5-Column Feature Bar -->
+    <section class="feature-bar-section">
+      <div class="container">
+        <div class="feature-bar-grid">
+          <!-- 1. Report Easily -->
+          <div class="feature-bar-item">
+            <div class="feature-icon-circle">
+              <svg viewBox="0 0 24 24">
+                <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+                <line x1="12" y1="18" x2="12.01" y2="18"></line>
+              </svg>
+            </div>
+            <div class="feature-bar-title">Report Easily</div>
+            <p class="feature-bar-desc">Snap a photo and auto-detect your location on our web app or mobile PWA.</p>
+          </div>
+
+          <!-- 2. Smart Routing -->
+          <div class="feature-bar-item">
+            <div class="feature-icon-circle">
+              <svg viewBox="0 0 24 24">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                <circle cx="12" cy="10" r="3"></circle>
+              </svg>
+            </div>
+            <div class="feature-bar-title">Smart Routing</div>
+            <p class="feature-bar-desc">PostGIS engine auto-routes between MCD, PWD, DJB, and DDA based on road cutoffs.</p>
+          </div>
+
+          <!-- 3. Auto Submission -->
+          <div class="feature-bar-item">
+            <div class="feature-icon-circle">
+              <svg viewBox="0 0 24 24">
+                <rect x="3" y="11" width="18" height="10" rx="2"></rect>
+                <circle cx="12" cy="5" r="2"></circle>
+                <path d="M12 7v4"></path>
+                <line x1="8" y1="16" x2="8" y2="16"></line>
+                <line x1="16" y1="16" x2="16" y2="16"></line>
+              </svg>
+            </div>
+            <div class="feature-bar-title">Auto Submission</div>
+            <p class="feature-bar-desc">TinyFish agents file your complaint directly on official government portals.</p>
+          </div>
+
+          <!-- 4. Track Progress -->
+          <div class="feature-bar-item">
+            <div class="feature-icon-circle">
+              <svg viewBox="0 0 24 24">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+              </svg>
+            </div>
+            <div class="feature-bar-title">Track Progress</div>
+            <p class="feature-bar-desc">Monitor live status milestones on our Delhi map with red, yellow, and green indicators.</p>
+          </div>
+
+          <!-- 5. Verify Resolution -->
+          <div class="feature-bar-item">
+            <div class="feature-icon-circle">
+              <svg viewBox="0 0 24 24">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+              </svg>
+            </div>
+            <div class="feature-bar-title">Verify Resolution</div>
+            <p class="feature-bar-desc">Computer vision + citizen OTP confirmation ensures repairs are genuine.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Failure Cycle Section -->
+    <section class="section section-subtle">
+      <div class="container">
+        <div class="section-header">
+          <h2 class="section-title">The Current Failure Cycle</h2>
+          <p>How the existing broken process traps citizen complaints in an endless loop of inaction.</p>
+        </div>
+
+        <div class="cycle-container">
+          <div class="cycle-steps">
+            <div class="cycle-step">
+              <div class="cycle-step-num">Step 1</div>
+              <div class="cycle-step-name">Issue Occurs</div>
+            </div>
+            <div class="cycle-arrow">&rarr;</div>
+            <div class="cycle-step">
+              <div class="cycle-step-num">Step 2</div>
+              <div class="cycle-step-name">Scattered Check</div>
+            </div>
+            <div class="cycle-arrow">&rarr;</div>
+            <div class="cycle-step">
+              <div class="cycle-step-num">Step 3</div>
+              <div class="cycle-step-name">Portal / Twitter Post</div>
+            </div>
+            <div class="cycle-arrow">&rarr;</div>
+            <div class="cycle-step">
+              <div class="cycle-step-num">Step 4</div>
+              <div class="cycle-step-name">Hazard Persists</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 3rem;">
+          <a href="report.html" class="btn btn-hero-primary" style="font-size: 1.05rem; padding: 0.9rem 2.4rem;">
+            Break the Cycle &bull; Report an Issue &rarr;
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Site Footer -->
+  <footer class="site-footer">
+    <div class="container footer-content">
+      <div class="footer-team-title">CivicConnect • Team HackX</div>
+      <div class="footer-members">Tanmay Aggarwal, Angel, Sujeet Verma</div>
+      <div class="footer-meta">VIPS-TC • HackIIITD 2026 • ESYA '26</div>
+      <div style="margin-top: 0.65rem;">
+        <span class="badge" style="background: rgba(255,255,255,0.1); color: #F8FAFC; font-size: 0.75rem; border: 1px solid rgba(255,255,255,0.2); padding: 0.25rem 0.65rem;" id="firebaseStatusBadge">
+          🔥 Connected to Firebase (civicconnect11)
+        </span>
+      </div>
+    </div>
+  </footer>
+
+  <script type="module" src="js/firebase-init.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/chatbot.js"></script>
+</body>
+</html>
