@@ -35,19 +35,19 @@
     },
     verification: {
       title: "AI Accountability Verification",
-      text: "Verification prevents fake closures using our AI Accountability Wall: The field engineer submits an 'after' photo. A canvas pixel-similarity comparison checks the before/after match. <strong>85% or more passes</strong>; below 85% is rejected as a fake closure. Once passed, the citizen enters a secure OTP to officially close the ticket.",
+      text: "Verification prevents fake closures using our AI Accountability Wall: The field engineer submits an 'after' photo. A canvas pixel-similarity comparison checks the before/after match. <strong>85% or more passes</strong> and officially verifies resolution; below 85% is rejected as a fake closure.",
       linkText: "Open Verify Resolution",
       linkUrl: "verify.html"
     },
     admin: {
-      title: "Government Admin Grid",
-      text: "Government municipal officials (MCD, PWD, DJB, DDA) can monitor all Delhi complaints in real time on the Admin Control Room with live color-coded indicators (Red for unsolved, Yellow for in progress, Green for solved).",
-      linkText: "Open Admin Govt Portal",
+      title: "Government Municipal Officer Portals",
+      text: "Municipal personnel from MCD, PWD, DJB, and DDA log in with their unique Officer Employee ID and secret access key. Each officer has distinct departmental authority, and cross-departmental access is strictly locked under NCT Delhi Inter-Agency Boundary Protocol.",
+      linkText: "Open Municipal Officer Login",
       linkUrl: "admin-login.html"
     },
     map: {
       title: "Delhi Map Indicator Colors",
-      text: "Our Delhi civic map displays live status using 3 color pins:<br>• <strong>Red:</strong> Issue Not Solved / Open (Pending acknowledgment)<br>• <strong>Yellow:</strong> Work in Process / Active repair team deployed<br>• <strong>Green:</strong> Issue Solved &amp; Verified with AI + citizen OTP.",
+      text: "Our Delhi civic map displays live status using 3 color pins:<br>• <strong>Red:</strong> Issue Not Solved / Open (Pending acknowledgment)<br>• <strong>Yellow:</strong> Work in Process / Active repair team deployed<br>• <strong>Green:</strong> Issue Solved &amp; AI-Verified Resolution.",
       linkText: "View Live Map on Track Page",
       linkUrl: "track.html"
     },

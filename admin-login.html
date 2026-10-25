@@ -3,6 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate, max-age=0">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <title>Government Portal Login | CivicConnect Delhi</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
@@ -28,77 +31,122 @@
     </div>
   </header>
 
-  <main class="login-wrap">
-    <div class="login-card">
+  <main class="section" style="padding: 2.5rem 0 4rem 0;">
+    <div class="container" style="max-width: 980px;">
+
+      <!-- Header & Intro -->
       <div style="text-align: center; margin-bottom: 2rem;">
-        <div style="width: 56px; height: 56px; border-radius: 50%; background-color: var(--primary-light); color: var(--primary); display: inline-flex; align-items: center; justify-content: center; margin-bottom: 1rem;">
-          <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2">
+        <div style="width: 58px; height: 58px; border-radius: 50%; background-color: var(--primary-light); color: var(--primary); display: inline-flex; align-items: center; justify-content: center; margin-bottom: 1rem; box-shadow: 0 4px 12px rgba(13,92,58,0.12);">
+          <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
           </svg>
         </div>
-        <h2 style="font-size: 1.65rem; margin-bottom: 0.35rem;">Municipal Officer Login</h2>
-        <p style="font-size: 0.88rem; color: var(--text-body); margin: 0;">
-          National Capital Territory of Delhi &bull; Authorized Civic Personnel
+        <h1 style="font-size: 2.1rem; margin-bottom: 0.35rem;">Municipal Officer Secure Authentication</h1>
+        <p style="font-size: 0.95rem; color: var(--text-body); max-width: 650px; margin: 0 auto;">
+          NCT Delhi Inter-Agency Boundary Protocol. Each municipal officer possesses unique authorized credentials and is legally restricted to their own departmental command.
         </p>
       </div>
 
-      <form id="govtLoginForm">
-        <!-- Department Selection -->
-        <div class="form-group">
-          <label for="deptSelect" class="form-label">Select Municipal Department <span class="req">*</span></label>
-          <select id="deptSelect" class="form-select" required>
-            <option value="mcd">MCD (Municipal Corporation of Delhi - Lanes &lt;60ft)</option>
-            <option value="pwd" selected>PWD (Public Works Department - Roads &ge;60ft)</option>
-            <option value="djb">DJB (Delhi Jal Board - Sewers &amp; Drains)</option>
-            <option value="dda">DDA (Delhi Development Authority - Parks)</option>
-            <option value="master">Master Inter-Agency Control Room</option>
-          </select>
+      <!-- Feedback Alert Box -->
+      <div id="authNoticeBox" style="display: none; margin-bottom: 1.5rem;"></div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: start;">
+        
+        <!-- Login Form Card -->
+        <div class="card" style="padding: 2rem; border-top: 4px solid var(--primary);">
+          <h2 style="font-size: 1.35rem; margin-bottom: 0.5rem;">Officer Sign In</h2>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.5rem;">
+            Select your department, enter your registered Officer ID and secret access key.
+          </p>
+
+          <form id="govtLoginForm">
+            <!-- Department Selection -->
+            <div class="form-group">
+              <label for="deptSelect" class="form-label">Municipal Department <span class="req">*</span></label>
+              <select id="deptSelect" class="form-select" required>
+                <option value="mcd" selected>MCD (Municipal Corporation of Delhi - Lanes &lt;60ft)</option>
+                <option value="pwd">PWD (Public Works Department - Roads &ge;60ft)</option>
+                <option value="djb">DJB (Delhi Jal Board - Sewers &amp; Drains)</option>
+                <option value="dda">DDA (Delhi Development Authority - Parks)</option>
+                <option value="master">Master Inter-Agency Control Room (Chief Secretary)</option>
+              </select>
+            </div>
+
+            <!-- Officer ID -->
+            <div class="form-group">
+              <label for="officerIdInput" class="form-label">Officer Employee ID <span class="req">*</span></label>
+              <input type="text" id="officerIdInput" class="form-control" value="MCD-OFFICER-401" placeholder="e.g. MCD-OFFICER-401" required autocomplete="username">
+            </div>
+
+            <!-- Security Key -->
+            <div class="form-group">
+              <label for="passwordInput" class="form-label">Security Access Key <span class="req">*</span></label>
+              <input type="password" id="passwordInput" class="form-control" value="MCD#Lanes2026" placeholder="Enter confidential key" required autocomplete="current-password">
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.5rem; margin-bottom: 1.25rem;">
+              <span style="font-size: 0.78rem; color: var(--text-muted);">
+                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: -2px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                Role-Based Cross-Portal Isolation Active
+              </span>
+            </div>
+
+            <button type="submit" id="submitAuthBtn" class="btn btn-primary btn-block" style="padding: 0.85rem; border-radius: var(--radius-pill); font-weight: 700;">
+              Authenticate &amp; Open Command Portal &rarr;
+            </button>
+          </form>
         </div>
 
-        <!-- Officer ID -->
-        <div class="form-group">
-          <label for="officerIdInput" class="form-label">Officer Employee ID <span class="req">*</span></label>
-          <input type="text" id="officerIdInput" class="form-control" value="PWD-NODAL-09" placeholder="e.g. MCD-ZONAL-04" required>
+        <!-- Protocol & Isolation Notice Card -->
+        <div class="card" style="padding: 2rem; background: #ffffff;">
+          <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;">
+            <div style="width: 40px; height: 40px; border-radius: var(--radius-sm); background: #FEF3C7; color: #B45309; display: flex; align-items: center; justify-content: center; font-weight: 800;">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+              </svg>
+            </div>
+            <div>
+              <h3 style="font-size: 1.15rem; margin: 0;">Inter-Agency Isolation Protocol</h3>
+              <span style="font-size: 0.78rem; color: #B45309; font-weight: 700; text-transform: uppercase;">Delhi Civic Administration Rule 4(A)</span>
+            </div>
+          </div>
+
+          <p style="font-size: 0.88rem; color: var(--text-body); line-height: 1.5; margin-bottom: 1rem;">
+            Under the Delhi Municipal Jurisdiction Framework:
+          </p>
+
+          <ul style="font-size: 0.85rem; color: var(--text-body); padding-left: 1.25rem; line-height: 1.6; margin-bottom: 1.25rem;">
+            <li><strong>MCD Officers</strong> cannot inspect, modify, or close PWD, DJB, or DDA tickets.</li>
+            <li><strong>PWD Officers</strong> have exclusive authority over highways (&ge;60ft) and cannot enter MCD colony systems.</li>
+            <li><strong>DJB Officers</strong> oversee water/sewerage grids and cannot access road asphalt depots.</li>
+            <li><strong>DDA Officers</strong> are restricted strictly to designated park perimeters and urban greens.</li>
+            <li><strong>Central Master Room</strong> is reserved exclusively for the Chief Secretary (DELHI-CHIEF-01).</li>
+          </ul>
+
+          <div style="background: var(--bg-subtle); border-radius: var(--radius-sm); padding: 0.85rem; font-size: 0.8rem; border-left: 3px solid var(--primary);">
+            <strong>Automated Boundary Enforcement:</strong> Attempting to navigate directly to another officer's URL will trigger an automatic boundary alert and redirect you back to your assigned portal.
+          </div>
         </div>
 
-        <!-- Security Code -->
-        <div class="form-group">
-          <label for="passwordInput" class="form-label">Security Access Key <span class="req">*</span></label>
-          <input type="password" id="passwordInput" class="form-control" value="delhigrid2026" required>
+      </div>
+
+      <!-- Quick Officer Credential Directory (For Evaluators & Testing) -->
+      <div style="margin-top: 3.5rem;">
+        <div style="text-align: center; margin-bottom: 1.5rem;">
+          <div style="font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin-bottom: 0.25rem;">
+            Evaluation &amp; Demo Roster
+          </div>
+          <h2 style="font-size: 1.45rem; margin: 0;">Authorized Officer Directory &amp; Instant Login</h2>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.25rem;">
+            Click <strong>"Log In as [Officer]"</strong> on any profile to instantly authenticate with their unique security key.
+          </p>
         </div>
 
-        <button type="submit" class="btn btn-primary btn-block" style="padding: 0.85rem; border-radius: var(--radius-pill); margin-top: 1.5rem;">
-          Authenticate &amp; Enter Dashboard &rarr;
-        </button>
-      </form>
-
-      <!-- Fast Demo Access Buttons -->
-      <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--border-color);">
-        <div style="font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.75rem; text-align: center;">
-          Quick Department Direct Access (Demo)
-        </div>
-
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem;">
-          <a href="javascript:void(0)" onclick="quickLogin('mcd', 'MCD-ZONAL-04')" class="btn btn-outline btn-sm" style="font-size: 0.8rem; padding: 0.5rem; border-radius: var(--radius-sm); text-align: center;">
-            MCD Command
-          </a>
-          <a href="javascript:void(0)" onclick="quickLogin('pwd', 'PWD-NODAL-09')" class="btn btn-outline btn-sm" style="font-size: 0.8rem; padding: 0.5rem; border-radius: var(--radius-sm); text-align: center;">
-            PWD Command
-          </a>
-          <a href="javascript:void(0)" onclick="quickLogin('djb', 'DJB-DRAIN-02')" class="btn btn-outline btn-sm" style="font-size: 0.8rem; padding: 0.5rem; border-radius: var(--radius-sm); text-align: center;">
-            DJB Command
-          </a>
-          <a href="javascript:void(0)" onclick="quickLogin('dda', 'DDA-HORTI-01')" class="btn btn-outline btn-sm" style="font-size: 0.8rem; padding: 0.5rem; border-radius: var(--radius-sm); text-align: center;">
-            DDA Command
-          </a>
-        </div>
-
-        <div style="margin-top: 0.6rem;">
-          <a href="javascript:void(0)" onclick="quickLogin('master', 'DELHI-CHIEF-01')" class="btn btn-outline btn-sm btn-block" style="font-size: 0.8rem; padding: 0.5rem; border-radius: var(--radius-sm); text-align: center;">
-            Master Control Room (All Departments)
-          </a>
+        <div class="officer-credential-cards" id="officerCardsContainer">
+          <!-- Rendered via JavaScript -->
         </div>
       </div>
+
     </div>
   </main>
 
@@ -111,41 +159,215 @@
     </div>
   </footer>
 
-  <script type="module" src="js/firebase-init.js"></script>
-  <script src="js/app.js"></script>
+  <script src="js/officer-auth.js"></script>
+  <script src="js/chatbot.js"></script>
 
   <script>
     document.addEventListener("DOMContentLoaded", () => {
-      const form = document.getElementById("govtLoginForm");
-      form.addEventListener("submit", (e) => {
-        e.preventDefault();
-        const dept = document.getElementById("deptSelect").value;
-        const officerId = document.getElementById("officerIdInput").value.trim() || "DELHI-OFFICER-01";
-        executeAuth(dept, officerId);
-      });
+      renderDirectoryCards();
+      setupFormListener();
+      checkUrlParams();
     });
 
-    function quickLogin(dept, officerId) {
-      executeAuth(dept, officerId);
+    const DEPT_DEFAULTS = {
+      mcd: { id: "MCD-OFFICER-401", key: "MCD#Lanes2026" },
+      pwd: { id: "PWD-OFFICER-209", key: "PWD#Arterial2026" },
+      djb: { id: "DJB-OFFICER-115", key: "DJB#Sewers2026" },
+      dda: { id: "DDA-OFFICER-303", key: "DDA#Greens2026" },
+      master: { id: "DELHI-CHIEF-01", key: "MasterGrid#Delhi2026" }
+    };
+
+    function setupFormListener() {
+      const deptSelect = document.getElementById("deptSelect");
+      const idInput = document.getElementById("officerIdInput");
+      const passInput = document.getElementById("passwordInput");
+      const form = document.getElementById("govtLoginForm");
+
+      // Auto update sample fields when dropdown changes
+      deptSelect.addEventListener("change", () => {
+        const selected = deptSelect.value;
+        if (DEPT_DEFAULTS[selected]) {
+          idInput.value = DEPT_DEFAULTS[selected].id;
+          passInput.value = DEPT_DEFAULTS[selected].key;
+        }
+      });
+
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const dept = deptSelect.value;
+        const officerId = idInput.value.trim();
+        const password = passInput.value.trim();
+
+        const result = civicOfficerAuth.authenticateOfficer(dept, officerId, password);
+        if (result.success) {
+          showNotice("success", `Authenticated as ${result.user.officerName} (${result.user.department}). Redirecting to designated portal...`);
+          setTimeout(() => {
+            window.location.href = result.user.allowedPage;
+          }, 350);
+        } else {
+          showNotice("error", result.message);
+        }
+      });
     }
 
-    function executeAuth(dept, officerId) {
-      sessionStorage.setItem("civicconnect_auth_officer", JSON.stringify({
-        department: dept.toUpperCase(),
-        officerId: officerId,
-        loginTime: new Date().toLocaleTimeString()
-      }));
+    function quickLoginOfficer(deptKey) {
+      const def = DEPT_DEFAULTS[deptKey];
+      if (!def) return;
 
-      const routes = {
-        mcd: "admin-mcd.html",
-        pwd: "admin-pwd.html",
-        djb: "admin-djb.html",
-        dda: "admin-dda.html",
-        master: "admin.html"
-      };
+      document.getElementById("deptSelect").value = deptKey;
+      document.getElementById("officerIdInput").value = def.id;
+      document.getElementById("passwordInput").value = def.key;
 
-      const target = routes[dept] || "admin.html";
-      window.location.href = target;
+      const result = civicOfficerAuth.authenticateOfficer(deptKey, def.id, def.key);
+      if (result.success) {
+        showNotice("success", `Logging in as ${result.user.officerName} (${result.user.department})...`);
+        setTimeout(() => {
+          window.location.href = result.user.allowedPage;
+        }, 350);
+      }
+    }
+
+    function renderDirectoryCards() {
+      const container = document.getElementById("officerCardsContainer");
+      if (!container) return;
+
+      const cardsData = [
+        {
+          key: "mcd",
+          dept: "MCD",
+          cssClass: "mcd-card",
+          badgeBg: "#1E40AF",
+          name: "Insp. Rajesh Sharma",
+          role: "Zonal Street & Sanitation Inspector",
+          division: "North Delhi • Colony Lanes (<60ft)",
+          id: "MCD-OFFICER-401",
+          keyVal: "MCD#Lanes2026",
+          btnClass: "mcd",
+          btnLabel: "Log In as MCD Officer"
+        },
+        {
+          key: "pwd",
+          dept: "PWD",
+          cssClass: "pwd-card",
+          badgeBg: "#B45309",
+          name: "Er. Sunita Rao",
+          role: "Superintending Highway Engineer",
+          division: "Ring Road • Arterial Corridors (≥60ft)",
+          id: "PWD-OFFICER-209",
+          keyVal: "PWD#Arterial2026",
+          btnClass: "pwd",
+          btnLabel: "Log In as PWD Officer"
+        },
+        {
+          key: "djb",
+          dept: "DJB",
+          cssClass: "djb-card",
+          badgeBg: "#0284C7",
+          name: "Er. Amit Verma",
+          role: "Assistant Drainage & Sewerage Engineer",
+          division: "Central Delhi • Trunk Sewerage & Jetting",
+          id: "DJB-OFFICER-115",
+          keyVal: "DJB#Sewers2026",
+          btnClass: "djb",
+          btnLabel: "Log In as DJB Officer"
+        },
+        {
+          key: "dda",
+          dept: "DDA",
+          cssClass: "dda-card",
+          badgeBg: "#065F46",
+          name: "Dir. Meenakshi Gupta",
+          role: "Senior Director (Urban Greens & Parks)",
+          division: "South Delhi • District Parks & Biodiversity",
+          id: "DDA-OFFICER-303",
+          keyVal: "DDA#Greens2026",
+          btnClass: "dda",
+          btnLabel: "Log In as DDA Officer"
+        },
+        {
+          key: "master",
+          dept: "MASTER",
+          cssClass: "master-card",
+          badgeBg: "#0F172A",
+          name: "Sh. V. K. Saxena",
+          role: "Chief Central Nodal Secretary",
+          division: "Delhi Secretariat • Inter-Agency Oversight",
+          id: "DELHI-CHIEF-01",
+          keyVal: "MasterGrid#Delhi2026",
+          btnClass: "master",
+          btnLabel: "Log In as Chief Secretary"
+        }
+      ];
+
+      container.innerHTML = cardsData.map(c => `
+        <div class="officer-card ${c.cssClass}">
+          <div>
+            <div class="officer-card-header">
+              <div class="officer-card-badge" style="background: ${c.badgeBg};">${c.dept}</div>
+              <div>
+                <div class="officer-card-name">${c.name}</div>
+                <div class="officer-card-role">${c.role}</div>
+              </div>
+            </div>
+
+            <div style="font-size: 0.76rem; color: var(--text-body); margin-bottom: 0.75rem;">
+              <strong>Division:</strong> ${c.division}
+            </div>
+
+            <div class="officer-card-cred">
+              <div class="cred-row">
+                <span class="cred-label">Unique Officer ID:</span>
+                <span class="cred-val">${c.id}</span>
+              </div>
+              <div class="cred-row" style="margin-bottom: 0;">
+                <span class="cred-label">Security Access Key:</span>
+                <span class="cred-val">${c.keyVal}</span>
+              </div>
+            </div>
+          </div>
+
+          <button type="button" class="btn-card-login ${c.btnClass}" onclick="quickLoginOfficer('${c.key}')">
+            ${c.btnLabel} &rarr;
+          </button>
+        </div>
+      `).join("");
+    }
+
+    function showNotice(type, text) {
+      const box = document.getElementById("authNoticeBox");
+      if (!box) return;
+
+      box.style.display = "block";
+      if (type === "error") {
+        box.innerHTML = `
+          <div style="background: #FEF2F2; border: 1px solid #FECACA; color: #991B1B; padding: 0.85rem 1.25rem; border-radius: var(--radius-sm); font-size: 0.88rem; display: flex; align-items: center; gap: 0.65rem;">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
+            <div><strong>Authentication Failed:</strong> ${text}</div>
+          </div>
+        `;
+      } else if (type === "success") {
+        box.innerHTML = `
+          <div style="background: #ECFDF5; border: 1px solid #A7F3D0; color: #065F46; padding: 0.85rem 1.25rem; border-radius: var(--radius-sm); font-size: 0.88rem; display: flex; align-items: center; gap: 0.65rem;">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+            <div>${text}</div>
+          </div>
+        `;
+      } else {
+        box.innerHTML = `
+          <div style="background: #FFFBEB; border: 1px solid #FDE68A; color: #92400E; padding: 0.85rem 1.25rem; border-radius: var(--radius-sm); font-size: 0.88rem;">
+            ${text}
+          </div>
+        `;
+      }
+    }
+
+    function checkUrlParams() {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get("reason") === "unauthenticated") {
+        showNotice("warning", "<strong>Session Notice:</strong> Please authenticate with your authorized departmental credentials to proceed.");
+      } else if (params.get("status") === "logged_out") {
+        showNotice("success", "<strong>Logged Out:</strong> Your officer session has been securely terminated.");
+      }
     }
   </script>
 </body>

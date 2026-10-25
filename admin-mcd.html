@@ -3,12 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MCD Grievance Command | CivicConnect Delhi</title>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate, max-age=0">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>MCD Zonal Grievance Command | CivicConnect Delhi</title>
   <link rel="stylesheet" href="css/style.css">
   <!-- Leaflet Map CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
 </head>
-<body>
+<body class="theme-mcd">
 
   <!-- Site Navigation -->
   <header class="site-header">
@@ -16,12 +19,12 @@
       <a href="index.html" class="brand-link">
         <span class="brand-logo-pin">
           <svg viewBox="0 0 24 24" width="28" height="28" fill="none">
-            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" fill="#0D5C3A"/>
+            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" fill="#1E40AF"/>
             <circle cx="12" cy="9" r="2.5" fill="#ffffff"/>
           </svg>
         </span>
         <span class="brand-name">CivicConnect</span>
-        <span class="brand-badge" style="background: #1E40AF; color: #fff;">MCD Portal</span>
+        <span class="brand-badge" style="background: #1E40AF; color: #fff;">MCD Command</span>
       </a>
 
       <button id="navToggle" class="nav-toggle" aria-label="Toggle Navigation">
@@ -33,47 +36,71 @@
       </button>
 
       <ul id="navMenu" class="nav-menu">
-        <li class="nav-item"><a href="index.html">Home</a></li>
+        <li class="nav-item"><a href="index.html">Public Home</a></li>
         <li class="nav-item"><a href="report.html">Report Issue</a></li>
         <li class="nav-item"><a href="track.html">Track</a></li>
         <li class="nav-item"><a href="leaderboard.html">Leaderboard</a></li>
-        <li class="nav-item"><a href="verify.html">Verify Resolution</a></li>
-        <li class="nav-item active"><a href="admin.html" class="nav-admin-link">Govt Portal</a></li>
+        <li class="nav-item active"><a href="admin-mcd.html" class="nav-admin-link">MCD Command</a></li>
         <li class="nav-item">
-          <a href="admin-login.html" class="btn-logout">Officer Logout</a>
+          <button type="button" onclick="civicOfficerAuth.logoutOfficer()" class="btn-logout">Officer Logout</button>
         </li>
       </ul>
     </div>
   </header>
 
-  <main class="section" style="padding-top: 2rem;">
+  <main class="section" style="padding-top: 1.5rem;">
     <div class="container">
-      <!-- Department Switcher Tabs -->
-      <div class="dept-tab-bar">
-        <a href="admin.html" class="dept-tab-item">Master Grid (All)</a>
-        <a href="admin-mcd.html" class="dept-tab-item active">MCD (Lanes &lt;60ft)</a>
-        <a href="admin-pwd.html" class="dept-tab-item">PWD (Roads &ge;60ft)</a>
-        <a href="admin-djb.html" class="dept-tab-item">DJB (Sewers &amp; Drains)</a>
-        <a href="admin-dda.html" class="dept-tab-item">DDA (Parks)</a>
-      </div>
+      
+      <!-- Inter-Agency Security & Boundary Clearance Bar -->
+      <div id="officerClearanceContainer"></div>
 
-      <!-- Department Header Banner -->
+      <!-- MCD Department Header Banner -->
       <div class="dept-header-banner">
         <div class="dept-title-group">
           <div class="dept-badge-icon dept-badge-mcd">MCD</div>
           <div>
-            <div style="font-size: 0.8rem; text-transform: uppercase; font-weight: 700; color: #1E40AF;">Municipal Corporation of Delhi</div>
-            <h1 style="font-size: 1.85rem; margin-bottom: 0.2rem;">Zonal Grievance Command &amp; Field Dispatch</h1>
+            <div style="font-size: 0.8rem; text-transform: uppercase; font-weight: 700; color: #1E40AF; letter-spacing: 0.04em;">
+              Municipal Corporation of Delhi &bull; Zonal Engineering &amp; Sanitation
+            </div>
+            <h1 style="font-size: 1.85rem; margin-bottom: 0.2rem;">Interior Colony Lanes &amp; Street Grievance Command</h1>
             <p style="font-size: 0.88rem; color: var(--text-body); margin: 0;">
-              <strong>Exclusive Jurisdiction:</strong> Interior colony lanes &amp; residential streets under 60 feet width, localized road pavement, and municipal sanitation across all 12 Delhi zones.
+              <strong>Exclusive Jurisdiction:</strong> Residential roads and colony lanes under 60 feet width, pedestrian footpaths, localized asphalt patching, and ward sanitation across all 12 Delhi municipal zones.
             </p>
           </div>
         </div>
 
-        <div style="display: flex; gap: 0.75rem; align-items: center;">
-          <div class="officer-session-pill">
+        <div style="display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;">
+          <div class="officer-session-pill" style="border-color: #93C5FD; background: #EFF6FF;">
             <span style="width: 8px; height: 8px; border-radius: 50%; background: #10B981;"></span>
-            <span id="officerIdBadge">Officer: MCD-ZONAL-04</span>
+            <span id="officerIdBadge" style="font-weight: 700; color: #1E40AF;">Officer: MCD-OFFICER-401</span>
+          </div>
+          <span style="font-size: 0.82rem; background: #DBEAFE; color: #1E40AF; padding: 0.35rem 0.65rem; border-radius: var(--radius-pill); font-weight: 700;">
+            North Zone Depot #4
+          </span>
+        </div>
+      </div>
+
+      <!-- MCD Specific Zonal Field Operations Bar -->
+      <div class="card" style="padding: 1rem 1.5rem; margin-bottom: 2rem; background: linear-gradient(to right, #EFF6FF, #ffffff); border-left: 4px solid #1E40AF;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+          <div style="display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap;">
+            <div>
+              <span style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: #1E40AF;">Active Zonal Patch Vans</span>
+              <div style="font-size: 1.1rem; font-weight: 800; color: var(--text-dark);">8 Cold-Mix Units</div>
+            </div>
+            <div style="border-left: 1px solid #BFDBFE; padding-left: 1.5rem;">
+              <span style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: #1E40AF;">Colony Sanitation Trucks</span>
+              <div style="font-size: 1.1rem; font-weight: 800; color: var(--text-dark);">14 Ward Compactors</div>
+            </div>
+            <div style="border-left: 1px solid #BFDBFE; padding-left: 1.5rem;">
+              <span style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: #1E40AF;">Jurisdiction Threshold</span>
+              <div style="font-size: 1.1rem; font-weight: 800; color: #1E40AF;">Lanes &lt; 60 Feet</div>
+            </div>
+          </div>
+          <div>
+            <button type="button" class="btn btn-dept-action btn-sm" onclick="alert('MCD Field Dispatch: Cold-mix patch van North-04 dispatched to Rohini Sector 7.')" style="border-radius: var(--radius-pill); font-weight: 700; padding: 0.5rem 1rem;">
+              + Quick Dispatch Patch Van
+            </button>
           </div>
         </div>
       </div>
@@ -83,7 +110,7 @@
         <div class="metric-card primary-metric">
           <div class="metric-header">Total MCD Tickets</div>
           <div class="metric-number" id="mcdKpiTotal">0</div>
-          <div class="metric-sub">Assigned to MCD Zonal Depots</div>
+          <div class="metric-sub">Assigned to MCD Zonal Depots (&lt;60ft)</div>
         </div>
         <div class="metric-card red-metric">
           <div class="metric-header" style="color: var(--status-red);">🔴 Unsolved (Red)</div>
@@ -93,12 +120,12 @@
         <div class="metric-card yellow-metric">
           <div class="metric-header" style="color: var(--status-yellow);">🟡 Work in Process (Yellow)</div>
           <div class="metric-number" style="color: var(--status-yellow);" id="mcdKpiProcess">0</div>
-          <div class="metric-sub">Active asphalt patching / sanitation in progress</div>
+          <div class="metric-sub">Active cold-patching / bin clearance</div>
         </div>
         <div class="metric-card green-metric">
           <div class="metric-header" style="color: var(--status-green);">🟢 Solved (Green)</div>
           <div class="metric-number" style="color: var(--status-green);" id="mcdKpiSolved">0</div>
-          <div class="metric-sub">AI verified (&ge;85%) &amp; citizen OTP verified</div>
+          <div class="metric-sub">AI verified (&ge;85%) resolution</div>
         </div>
       </div>
 
@@ -106,9 +133,9 @@
       <div class="card" style="padding: 1.5rem; margin-bottom: 2.5rem;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 1rem;">
           <div>
-            <h3 style="font-size: 1.25rem; margin-bottom: 0.2rem;">MCD Jurisdiction Map (Delhi Interior Streets)</h3>
+            <h3 style="font-size: 1.25rem; margin-bottom: 0.2rem; color: #1E40AF;">MCD Colony Streets Map (Delhi Interior Lanes)</h3>
             <p style="font-size: 0.88rem; color: var(--text-body); margin: 0;">
-              Displaying all civic complaints geo-tagged to colony lanes under 60 feet.
+              Displaying all civic complaints geo-tagged to colony streets under 60 feet.
             </p>
           </div>
           <div class="map-legend-bar" style="border: none; padding: 0;">
@@ -158,45 +185,50 @@
 
   <!-- Status Update Modal -->
   <div id="mcdActionModal" class="modal-overlay">
-    <div class="modal-window">
+    <div class="modal-card">
       <div class="modal-header">
-        <h3 id="mcdModalId">CC-DEL-2026-00000</h3>
-        <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0;" id="mcdModalLoc">Colony Location</p>
+        <h3 style="font-size: 1.2rem; margin: 0; color: #1E40AF;">MCD Field Status Update</h3>
+        <button type="button" class="modal-close" onclick="document.getElementById('mcdActionModal').classList.remove('active')">&times;</button>
       </div>
 
-      <div style="display: flex; gap: 1rem; margin-bottom: 1.25rem;">
-        <div style="width: 100px; height: 100px; border-radius: var(--radius-sm); overflow: hidden; border: 1px solid var(--border-color); flex-shrink: 0; background: var(--bg-subtle);">
-          <img id="mcdModalImg" src="" alt="Issue photo" style="width: 100%; height: 100%; object-fit: cover;">
+      <div class="modal-body">
+        <div style="margin-bottom: 1rem;">
+          <div style="font-size: 0.8rem; font-weight: 700; color: #1E40AF;">TICKET REFERENCE</div>
+          <div style="font-size: 1.15rem; font-weight: 800;" id="mcdModalId">CC-DEL-2026-XXXX</div>
+          <div style="font-size: 0.88rem; color: var(--text-muted);" id="mcdModalLoc">Location</div>
         </div>
-        <div>
-          <div style="font-size: 0.82rem; color: #1E40AF; text-transform: uppercase; font-weight: 700;">MCD Colony Maintenance</div>
-          <div style="font-weight: 700; color: var(--text-dark); font-size: 1.05rem;" id="mcdModalCat">Pothole Hazard</div>
-          <div style="font-size: 0.85rem; color: var(--text-body); margin-top: 0.25rem;" id="mcdModalDesc">Description...</div>
+
+        <div style="display: grid; grid-template-columns: 100px 1fr; gap: 1rem; margin-bottom: 1rem; align-items: center;">
+          <img id="mcdModalImg" src="images/pothole.jpg" alt="Complaint photo" style="width: 100px; height: 75px; object-fit: cover; border-radius: 4px; border: 1px solid var(--border-color);">
+          <div>
+            <div style="font-weight: 700;" id="mcdModalCat">Category</div>
+            <div style="font-size: 0.85rem; color: var(--text-body);" id="mcdModalDesc">Description</div>
+          </div>
         </div>
+
+        <form id="mcdUpdateForm">
+          <div class="form-group">
+            <label for="mcdStatusSelect" class="form-label">Update Workflow Status</label>
+            <select id="mcdStatusSelect" class="form-select">
+              <option value="Filed">Filed (🔴 Red - Unsolved)</option>
+              <option value="Assigned">Assigned (🔴 Red - Depot Queued)</option>
+              <option value="In Progress">In Progress (🟡 Yellow - Patch Team Active)</option>
+              <option value="Repaired">Repaired (🟢 Green - Awaiting Citizen Sign-off)</option>
+              <option value="Closed">Closed (🟢 Green - Fully Resolved)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="mcdNotes" class="form-label">Zonal Field Inspection Log</label>
+            <textarea id="mcdNotes" class="form-textarea" rows="2" placeholder="e.g. Cold-mix patch van #04 deployed with 400kg asphalt."></textarea>
+          </div>
+
+          <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.5rem;">
+            <button type="button" class="btn btn-outline" onclick="document.getElementById('mcdActionModal').classList.remove('active')">Cancel</button>
+            <button type="submit" class="btn btn-dept-action">Save Status &amp; Broadcast</button>
+          </div>
+        </form>
       </div>
-
-      <form id="mcdUpdateForm">
-        <div class="form-group">
-          <label for="mcdStatusSelect" class="form-label">Update Status &amp; Dispatch Field Crew <span class="req">*</span></label>
-          <select id="mcdStatusSelect" class="form-select" required>
-            <option value="Filed">🔴 Filed (Unsolved - Red Pin)</option>
-            <option value="Assigned">🔴 Assigned to Zonal Contractor (Unsolved - Red Pin)</option>
-            <option value="In Progress">🟡 In Progress (Patch Truck Dispatched - Yellow Pin)</option>
-            <option value="Repaired">🟢 Repaired (Awaiting AI Verification - Green Pin)</option>
-            <option value="Closed">🟢 Closed (Verified - Green Pin)</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label for="mcdNotes" class="form-label">MCD Field Log Notes</label>
-          <textarea id="mcdNotes" class="form-textarea" rows="2" placeholder="e.g. Dispatched asphalt patching truck from North MCD Depot..."></textarea>
-        </div>
-
-        <div style="display: flex; gap: 0.75rem; justify-content: flex-end; margin-top: 1.5rem;">
-          <button type="button" onclick="document.getElementById('mcdActionModal').classList.remove('active')" class="btn btn-outline btn-sm" style="border-radius: var(--radius-pill);">Cancel</button>
-          <button type="submit" class="btn btn-primary btn-sm" style="border-radius: var(--radius-pill);">Save Telemetry &amp; Update Map</button>
-        </div>
-      </form>
     </div>
   </div>
 
@@ -209,27 +241,41 @@
     </div>
   </footer>
 
-  <!-- Leaflet Map JS -->
+  <!-- Scripts -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="js/officer-auth.js"></script>
   <script src="js/app.js"></script>
   <script src="js/chatbot.js"></script>
 
   <script>
+    // 1. Strict Boundary Guard - Ensure officer is authorized for MCD
+    if (!civicOfficerAuth.enforceOfficerClearance("MCD")) {
+      // Execution stopped, user being redirected
+    }
+
     let mcdMap = null;
     let mcdMarkerGroup = null;
     let currentTicket = null;
 
     document.addEventListener("DOMContentLoaded", () => {
-      // Check session
-      const auth = sessionStorage.getItem("civicconnect_auth_officer");
-      if (auth) {
-        try {
-          const user = JSON.parse(auth);
-          document.getElementById("officerIdBadge").textContent = `Officer: ${user.officerId}`;
-        } catch(e) {}
+      // Render Security Clearance Bar with boundary locks
+      civicOfficerAuth.renderSecurityClearanceBar("officerClearanceContainer", "MCD");
+
+      const officer = civicOfficerAuth.getActiveOfficer();
+      if (officer) {
+        document.getElementById("officerIdBadge").textContent = `Officer: ${officer.officerId} • ${officer.officerName}`;
       }
 
       initMcdDashboard();
+
+      // Close modal on backdrop click or ESC key
+      const modal = document.getElementById("mcdActionModal");
+      modal.addEventListener("click", (e) => {
+        if (e.target === modal) modal.classList.remove("active");
+      });
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && modal.classList.contains("active")) modal.classList.remove("active");
+      });
     });
 
     function initMcdDashboard() {
@@ -288,7 +334,7 @@
             <div style="font-size: 0.8rem; color: var(--text-body); margin-bottom: 6px;">${t.locationText}</div>
             <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #eee; padding-top: 6px;">
               <span class="badge ${ind.badgeClass}">${t.status}</span>
-              <a href="javascript:void(0)" onclick="openModal('${t.id}')" style="font-size: 0.8rem; font-weight: 700; color: var(--primary);">Dispatch &rarr;</a>
+              <a href="javascript:void(0)" onclick="openModal('${t.id}')" style="font-size: 0.8rem; font-weight: 700; color: #1E40AF;">Dispatch &rarr;</a>
             </div>
           </div>
         `;
@@ -313,7 +359,7 @@
           <td><strong>${t.id}</strong></td>
           <td>${t.categoryLabel || t.category}</td>
           <td>${t.locationText}</td>
-          <td><span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;">${t.roadTypeLabel || t.roadType}</span></td>
+          <td><span style="font-size: 0.8rem; color: #1E40AF; font-weight: 700; background: #EFF6FF; padding: 0.2rem 0.5rem; border-radius: 4px;">${t.roadTypeLabel || t.roadType}</span></td>
           <td>
             <span class="badge ${ind.badgeClass}">
               <span class="legend-dot dot-${ind.color}" style="width: 8px; height: 8px; margin-right: 4px;"></span>
@@ -322,7 +368,7 @@
           </td>
           <td>${t.date}</td>
           <td>
-            <button type="button" class="btn btn-outline btn-sm" onclick="openModal('${t.id}')" style="padding: 0.25rem 0.65rem; font-size: 0.75rem; border-radius: var(--radius-pill);">
+            <button type="button" class="btn btn-outline btn-sm" onclick="openModal('${t.id}')" style="padding: 0.25rem 0.65rem; font-size: 0.75rem; border-radius: var(--radius-pill); border-color: #1E40AF; color: #1E40AF;">
               Dispatch Crew &rarr;
             </button>
           </td>

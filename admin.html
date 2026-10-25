@@ -3,12 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate, max-age=0">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <title>Admin &amp; Govt Control Room | CivicConnect Delhi</title>
   <link rel="stylesheet" href="css/style.css">
   <!-- Leaflet Map CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
 </head>
-<body>
+<body class="theme-master">
 
   <!-- Site Navigation -->
   <header class="site-header">
@@ -16,12 +19,12 @@
       <a href="index.html" class="brand-link">
         <span class="brand-logo-pin">
           <svg viewBox="0 0 24 24" width="28" height="28" fill="none">
-            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" fill="#0D5C3A"/>
+            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" fill="#0F172A"/>
             <circle cx="12" cy="9" r="2.5" fill="#ffffff"/>
           </svg>
         </span>
         <span class="brand-name">CivicConnect</span>
-        <span class="brand-badge">Govt Portal</span>
+        <span class="brand-badge" style="background: #0F172A; color: #fff;">Master Command</span>
       </a>
 
       <button id="navToggle" class="nav-toggle" aria-label="Toggle Navigation">
@@ -33,42 +36,36 @@
       </button>
 
       <ul id="navMenu" class="nav-menu">
-        <li class="nav-item"><a href="index.html">Home</a></li>
+        <li class="nav-item"><a href="index.html">Public Home</a></li>
         <li class="nav-item"><a href="report.html">Report Issue</a></li>
         <li class="nav-item"><a href="track.html">Track</a></li>
         <li class="nav-item"><a href="leaderboard.html">Leaderboard</a></li>
-        <li class="nav-item"><a href="verify.html">Verify Resolution</a></li>
-        <li class="nav-item active"><a href="admin.html" class="nav-admin-link">Govt Portal</a></li>
+        <li class="nav-item active"><a href="admin.html" class="nav-admin-link">Master Grid</a></li>
         <li class="nav-item">
-          <a href="admin-login.html" class="btn-logout">Officer Logout</a>
+          <button type="button" onclick="civicOfficerAuth.logoutOfficer()" class="btn-logout">Officer Logout</button>
         </li>
       </ul>
     </div>
   </header>
 
-  <main class="section" style="padding-top: 2rem;">
+  <main class="section" style="padding-top: 1.5rem;">
     <div class="container">
-      <!-- Department Switcher Tabs -->
-      <div class="dept-tab-bar">
-        <a href="admin.html" class="dept-tab-item active">Master Grid (All Departments)</a>
-        <a href="admin-mcd.html" class="dept-tab-item">MCD (Lanes &lt;60ft)</a>
-        <a href="admin-pwd.html" class="dept-tab-item">PWD (Roads &ge;60ft)</a>
-        <a href="admin-djb.html" class="dept-tab-item">DJB (Sewers &amp; Drains)</a>
-        <a href="admin-dda.html" class="dept-tab-item">DDA (Parks)</a>
-      </div>
+      
+      <!-- Inter-Agency Security & Boundary Clearance Bar -->
+      <div id="officerClearanceContainer"></div>
 
       <div style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 1rem; margin-bottom: 2rem;">
         <div>
-          <div class="hero-eyebrow" style="margin-bottom: 0.5rem;">National Capital Territory of Delhi • Municipal Grid</div>
-          <h1 style="font-size: 2.25rem; margin-bottom: 0.35rem;">Government Monitoring Control Room</h1>
+          <div class="hero-eyebrow" style="margin-bottom: 0.5rem; color: #D97706;">National Capital Territory of Delhi &bull; Central Secretariat</div>
+          <h1 style="font-size: 2.25rem; margin-bottom: 0.35rem;">Chief Secretary Inter-Agency Control Room</h1>
           <p style="font-size: 0.95rem; color: var(--text-body); margin: 0;">
-            Unified inter-agency monitoring grid across MCD, PWD, DJB, and DDA. Track open issues, update work-in-progress, and review AI verified resolutions.
+            Unified inter-agency monitoring grid across MCD, PWD, DJB, and DDA. Cross-departmental arbitration, escalation monitoring, and real-time civic telemetry.
           </p>
         </div>
-        <div style="display: flex; align-items: center; gap: 0.75rem;">
-          <div class="officer-session-pill">
+        <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
+          <div class="officer-session-pill" style="border-color: #CBD5E1; background: #F8FAFC;">
             <span style="width: 8px; height: 8px; border-radius: 50%; background: #10B981;"></span>
-            <span id="officerIdBadge">Officer: DELHI-CHIEF-01</span>
+            <span id="officerIdBadge" style="font-weight: 700; color: #0F172A;">Officer: DELHI-CHIEF-01</span>
           </div>
           <span style="font-size: 0.85rem; color: var(--text-muted); font-weight: 500;" id="lastRefreshedTime">Live Telemetry Synchronized</span>
         </div>
@@ -97,7 +94,7 @@
         <div class="metric-card green-metric">
           <div class="metric-header" style="color: var(--status-green);">Issue Solved (Green)</div>
           <div class="metric-number" style="color: var(--status-green);" id="kpiSolved">0</div>
-          <div class="metric-sub">Repaired &amp; AI-verified with citizen OTP</div>
+          <div class="metric-sub">Repaired &amp; AI-verified resolution</div>
         </div>
       </div>
 
@@ -222,7 +219,7 @@
             <option value="Assigned">🔴 Assigned to Contractor (Not Solved - Red Pin)</option>
             <option value="In Progress">🟡 In Progress (Work in Process - Yellow Pin)</option>
             <option value="Repaired">🟢 Repaired (Awaiting AI Verification - Green Pin)</option>
-            <option value="Closed">🟢 Closed (Verified with Citizen OTP - Green Pin)</option>
+            <option value="Closed">🟢 Closed (AI Verified Resolution - Green Pin)</option>
           </select>
           <div class="form-help">Updating the status updates the live indicator color on the Delhi map.</div>
         </div>
@@ -252,16 +249,30 @@
   <!-- Leaflet Map JS -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <script type="module" src="js/firebase-init.js"></script>
+  <script src="js/officer-auth.js"></script>
   <script src="js/app.js"></script>
   <script src="js/chatbot.js"></script>
 
   <script>
+    // 1. Strict Boundary Guard - Ensure officer is authorized for Master Control Room
+    if (!civicOfficerAuth.enforceOfficerClearance("MASTER")) {
+      // Stopped, redirected
+    }
+
     let adminMap = null;
     let mapMarkerLayerGroup = null;
     let selectedTicketForModal = null;
     let currentMapFilter = "all";
 
     document.addEventListener("DOMContentLoaded", () => {
+      // Render Security Clearance Bar
+      civicOfficerAuth.renderSecurityClearanceBar("officerClearanceContainer", "MASTER");
+
+      const officer = civicOfficerAuth.getActiveOfficer();
+      if (officer) {
+        document.getElementById("officerIdBadge").textContent = `Officer: ${officer.officerId} • ${officer.officerName}`;
+      }
+
       initAdminDashboard();
       setupAdminEventListeners();
     });

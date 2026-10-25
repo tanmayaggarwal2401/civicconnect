@@ -3,12 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate, max-age=0">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <title>DJB Drainage &amp; Sewer Command | CivicConnect Delhi</title>
   <link rel="stylesheet" href="css/style.css">
   <!-- Leaflet Map CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
 </head>
-<body>
+<body class="theme-djb">
 
   <!-- Site Navigation -->
   <header class="site-header">
@@ -16,12 +19,12 @@
       <a href="index.html" class="brand-link">
         <span class="brand-logo-pin">
           <svg viewBox="0 0 24 24" width="28" height="28" fill="none">
-            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" fill="#0D5C3A"/>
+            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" fill="#0284C7"/>
             <circle cx="12" cy="9" r="2.5" fill="#ffffff"/>
           </svg>
         </span>
         <span class="brand-name">CivicConnect</span>
-        <span class="brand-badge" style="background: #0284C7; color: #fff;">DJB Portal</span>
+        <span class="brand-badge" style="background: #0284C7; color: #fff;">DJB Command</span>
       </a>
 
       <button id="navToggle" class="nav-toggle" aria-label="Toggle Navigation">
@@ -33,47 +36,71 @@
       </button>
 
       <ul id="navMenu" class="nav-menu">
-        <li class="nav-item"><a href="index.html">Home</a></li>
+        <li class="nav-item"><a href="index.html">Public Home</a></li>
         <li class="nav-item"><a href="report.html">Report Issue</a></li>
         <li class="nav-item"><a href="track.html">Track</a></li>
         <li class="nav-item"><a href="leaderboard.html">Leaderboard</a></li>
-        <li class="nav-item"><a href="verify.html">Verify Resolution</a></li>
-        <li class="nav-item active"><a href="admin.html" class="nav-admin-link">Govt Portal</a></li>
+        <li class="nav-item active"><a href="admin-djb.html" class="nav-admin-link">DJB Command</a></li>
         <li class="nav-item">
-          <a href="admin-login.html" class="btn-logout">Officer Logout</a>
+          <button type="button" onclick="civicOfficerAuth.logoutOfficer()" class="btn-logout">Officer Logout</button>
         </li>
       </ul>
     </div>
   </header>
 
-  <main class="section" style="padding-top: 2rem;">
+  <main class="section" style="padding-top: 1.5rem;">
     <div class="container">
-      <!-- Department Switcher Tabs -->
-      <div class="dept-tab-bar">
-        <a href="admin.html" class="dept-tab-item">Master Grid (All)</a>
-        <a href="admin-mcd.html" class="dept-tab-item">MCD (Lanes &lt;60ft)</a>
-        <a href="admin-pwd.html" class="dept-tab-item">PWD (Roads &ge;60ft)</a>
-        <a href="admin-djb.html" class="dept-tab-item active">DJB (Sewers &amp; Drains)</a>
-        <a href="admin-dda.html" class="dept-tab-item">DDA (Parks)</a>
-      </div>
+      
+      <!-- Inter-Agency Security & Boundary Clearance Bar -->
+      <div id="officerClearanceContainer"></div>
 
-      <!-- Department Header Banner -->
+      <!-- DJB Department Header Banner -->
       <div class="dept-header-banner">
         <div class="dept-title-group">
           <div class="dept-badge-icon dept-badge-djb">DJB</div>
           <div>
-            <div style="font-size: 0.8rem; text-transform: uppercase; font-weight: 700; color: #0284C7;">Delhi Jal Board</div>
-            <h1 style="font-size: 1.85rem; margin-bottom: 0.2rem;">Drainage &amp; Sewer Maintenance Command</h1>
+            <div style="font-size: 0.8rem; text-transform: uppercase; font-weight: 700; color: #0284C7; letter-spacing: 0.04em;">
+              Delhi Jal Board &bull; Drainage, Sewer Networks &amp; Pumping Operations
+            </div>
+            <h1 style="font-size: 1.85rem; margin-bottom: 0.2rem;">Underground Drainage &amp; Sewer Maintenance Command</h1>
             <p style="font-size: 0.88rem; color: var(--text-body); margin: 0;">
-              <strong>Exclusive Jurisdiction:</strong> Underground sewerage pipelines, stormwater drainage trunk conduits, desilting super-suckers, and water mains across Delhi NCT.
+              <strong>Exclusive Jurisdiction:</strong> Underground sewerage pipelines, trunk stormwater conduits, sewer desilting super-suckers, manhole covers, and water mains across Delhi NCT.
             </p>
           </div>
         </div>
 
-        <div style="display: flex; gap: 0.75rem; align-items: center;">
-          <div class="officer-session-pill">
+        <div style="display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;">
+          <div class="officer-session-pill" style="border-color: #BAE6FD; background: #F0F9FF;">
             <span style="width: 8px; height: 8px; border-radius: 50%; background: #10B981;"></span>
-            <span id="djbOfficerBadge">Officer: DJB-DRAIN-02</span>
+            <span id="djbOfficerBadge" style="font-weight: 700; color: #0284C7;">Officer: DJB-OFFICER-115</span>
+          </div>
+          <span style="font-size: 0.82rem; background: #E0F2FE; color: #0369A1; padding: 0.35rem 0.65rem; border-radius: var(--radius-pill); font-weight: 700;">
+            Central Drainage Depot
+          </span>
+        </div>
+      </div>
+
+      <!-- DJB Super-Sucker Machinery Bar -->
+      <div class="card" style="padding: 1rem 1.5rem; margin-bottom: 2rem; background: linear-gradient(to right, #F0F9FF, #ffffff); border-left: 4px solid #0284C7;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+          <div style="display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap;">
+            <div>
+              <span style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: #0284C7;">Super-Sucker Jetting Units</span>
+              <div style="font-size: 1.1rem; font-weight: 800; color: var(--text-dark);">9 Recycler Tankers</div>
+            </div>
+            <div style="border-left: 1px solid #BAE6FD; padding-left: 1.5rem;">
+              <span style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: #0284C7;">Pipeline CCTV Robotic Units</span>
+              <div style="font-size: 1.1rem; font-weight: 800; color: var(--text-dark);">4 Cameras Active</div>
+            </div>
+            <div style="border-left: 1px solid #BAE6FD; padding-left: 1.5rem;">
+              <span style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: #0284C7;">Jurisdiction Focus</span>
+              <div style="font-size: 1.1rem; font-weight: 800; color: #0284C7;">Sewerage &amp; Trunk Drains</div>
+            </div>
+          </div>
+          <div>
+            <button type="button" class="btn btn-dept-action btn-sm" onclick="alert('DJB Field Dispatch: High-capacity Jetting Tanker DJB-02 deployed to Lajpat Nagar ring road sewer.')" style="border-radius: var(--radius-pill); font-weight: 700; padding: 0.5rem 1rem;">
+              + Dispatch Super-Sucker Tanker
+            </button>
           </div>
         </div>
       </div>
@@ -88,17 +115,17 @@
         <div class="metric-card red-metric">
           <div class="metric-header" style="color: var(--status-red);">🔴 Unsolved (Red)</div>
           <div class="metric-number" style="color: var(--status-red);" id="djbKpiUnsolved">0</div>
-          <div class="metric-sub">Awaiting super-sucker unit dispatch</div>
+          <div class="metric-sub">Awaiting suction jetting deployment</div>
         </div>
         <div class="metric-card yellow-metric">
           <div class="metric-header" style="color: var(--status-yellow);">🟡 Work in Process (Yellow)</div>
           <div class="metric-number" style="color: var(--status-yellow);" id="djbKpiProcess">0</div>
-          <div class="metric-sub">Suction jetting / pipeline clearing active</div>
+          <div class="metric-sub">Suction jetting / pipeline desilting active</div>
         </div>
         <div class="metric-card green-metric">
           <div class="metric-header" style="color: var(--status-green);">🟢 Solved (Green)</div>
           <div class="metric-number" style="color: var(--status-green);" id="djbKpiSolved">0</div>
-          <div class="metric-sub">Drainage cleared &amp; verified by citizen OTP</div>
+          <div class="metric-sub">Trunk drain cleared &amp; verified</div>
         </div>
       </div>
 
@@ -106,9 +133,9 @@
       <div class="card" style="padding: 1.5rem; margin-bottom: 2.5rem;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 1rem;">
           <div>
-            <h3 style="font-size: 1.25rem; margin-bottom: 0.2rem;">DJB Jurisdiction Map (Sewer &amp; Drainage Lines)</h3>
+            <h3 style="font-size: 1.25rem; margin-bottom: 0.2rem; color: #0284C7;">DJB Drainage Network Map (Delhi Sewers &amp; Drains)</h3>
             <p style="font-size: 0.88rem; color: var(--text-body); margin: 0;">
-              Displaying all civic complaints geo-tagged to Delhi Jal Board conduits.
+              Displaying all civic complaints geo-tagged to Delhi Jal Board underground conduit lines.
             </p>
           </div>
           <div class="map-legend-bar" style="border: none; padding: 0;">
@@ -129,8 +156,8 @@
       <div class="card" style="padding: 1.5rem;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 1rem;">
           <div>
-            <h3 style="font-size: 1.25rem; margin-bottom: 0.2rem;">DJB Active Grievance Queue</h3>
-            <p style="font-size: 0.88rem; color: var(--text-body); margin: 0;">Deploy jetting machines, desilting trucks, or log sewer maintenance.</p>
+            <h3 style="font-size: 1.25rem; margin-bottom: 0.2rem;">DJB Active Drainage Queue</h3>
+            <p style="font-size: 0.88rem; color: var(--text-body); margin: 0;">Dispatch super-suckers, seal open manholes, or log hydraulic clearing.</p>
           </div>
         </div>
 
@@ -141,7 +168,7 @@
                 <th>Reference ID</th>
                 <th>Category</th>
                 <th>Drainage Location</th>
-                <th>Asset Type</th>
+                <th>Conduit Type</th>
                 <th>Status Indicator</th>
                 <th>Date Filed</th>
                 <th>Action</th>
@@ -156,47 +183,52 @@
     </div>
   </main>
 
-  <!-- DJB Action Modal -->
+  <!-- Status Update Modal -->
   <div id="djbActionModal" class="modal-overlay">
-    <div class="modal-window">
+    <div class="modal-card">
       <div class="modal-header">
-        <h3 id="djbModalId">CC-DEL-2026-00000</h3>
-        <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0;" id="djbModalLoc">Sewer Location</p>
+        <h3 style="font-size: 1.2rem; margin: 0; color: #0284C7;">DJB Drainage Status Update</h3>
+        <button type="button" class="modal-close" onclick="document.getElementById('djbActionModal').classList.remove('active')">&times;</button>
       </div>
 
-      <div style="display: flex; gap: 1rem; margin-bottom: 1.25rem;">
-        <div style="width: 100px; height: 100px; border-radius: var(--radius-sm); overflow: hidden; border: 1px solid var(--border-color); flex-shrink: 0; background: var(--bg-subtle);">
-          <img id="djbModalImg" src="" alt="Issue photo" style="width: 100%; height: 100%; object-fit: cover;">
+      <div class="modal-body">
+        <div style="margin-bottom: 1rem;">
+          <div style="font-size: 0.8rem; font-weight: 700; color: #0284C7;">TICKET REFERENCE</div>
+          <div style="font-size: 1.15rem; font-weight: 800;" id="djbModalId">CC-DEL-2026-XXXX</div>
+          <div style="font-size: 0.88rem; color: var(--text-muted);" id="djbModalLoc">Location</div>
         </div>
-        <div>
-          <div style="font-size: 0.82rem; color: #0284C7; text-transform: uppercase; font-weight: 700;">DJB Sewer Maintenance</div>
-          <div style="font-weight: 700; color: var(--text-dark); font-size: 1.05rem;" id="djbModalCat">Drain Hazard</div>
-          <div style="font-size: 0.85rem; color: var(--text-body); margin-top: 0.25rem;" id="djbModalDesc">Description...</div>
+
+        <div style="display: grid; grid-template-columns: 100px 1fr; gap: 1rem; margin-bottom: 1rem; align-items: center;">
+          <img id="djbModalImg" src="images/drain.jpg" alt="Complaint photo" style="width: 100px; height: 75px; object-fit: cover; border-radius: 4px; border: 1px solid var(--border-color);">
+          <div>
+            <div style="font-weight: 700;" id="djbModalCat">Category</div>
+            <div style="font-size: 0.85rem; color: var(--text-body);" id="djbModalDesc">Description</div>
+          </div>
         </div>
+
+        <form id="djbUpdateForm">
+          <div class="form-group">
+            <label for="djbStatusSelect" class="form-label">Update Drainage Status</label>
+            <select id="djbStatusSelect" class="form-select">
+              <option value="Filed">Filed (🔴 Red - Unsolved)</option>
+              <option value="Assigned">Assigned (🔴 Red - Suction Unit Queued)</option>
+              <option value="In Progress">In Progress (🟡 Yellow - Jetting Active)</option>
+              <option value="Repaired">Repaired (🟢 Green - Awaiting Citizen Sign-off)</option>
+              <option value="Closed">Closed (🟢 Green - Fully Desilted)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="djbNotes" class="form-label">Sewer Field Desilting Log</label>
+            <textarea id="djbNotes" class="form-textarea" rows="2" placeholder="e.g. High-pressure jetting nozzle deployed; line desilted."></textarea>
+          </div>
+
+          <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.5rem;">
+            <button type="button" class="btn btn-outline" onclick="document.getElementById('djbActionModal').classList.remove('active')">Cancel</button>
+            <button type="submit" class="btn btn-dept-action">Save Status &amp; Broadcast</button>
+          </div>
+        </form>
       </div>
-
-      <form id="djbUpdateForm">
-        <div class="form-group">
-          <label for="djbStatusSelect" class="form-label">Update Status &amp; Dispatch Machinery <span class="req">*</span></label>
-          <select id="djbStatusSelect" class="form-select" required>
-            <option value="Filed">🔴 Filed (Unsolved - Red Pin)</option>
-            <option value="Assigned">🔴 Assigned to DJB Drainage Crew (Unsolved - Red Pin)</option>
-            <option value="In Progress">🟡 In Progress (Super-Sucker Unit Deployed - Yellow Pin)</option>
-            <option value="Repaired">🟢 Repaired (Desilting Complete - Green Pin)</option>
-            <option value="Closed">🟢 Closed (Verified - Green Pin)</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label for="djbNotes" class="form-label">DJB Desilting Log</label>
-          <textarea id="djbNotes" class="form-textarea" rows="2" placeholder="e.g. Deployed high-pressure jetting machine from Lajpat Nagar station..."></textarea>
-        </div>
-
-        <div style="display: flex; gap: 0.75rem; justify-content: flex-end; margin-top: 1.5rem;">
-          <button type="button" onclick="document.getElementById('djbActionModal').classList.remove('active')" class="btn btn-outline btn-sm" style="border-radius: var(--radius-pill);">Cancel</button>
-          <button type="submit" class="btn btn-primary btn-sm" style="border-radius: var(--radius-pill);">Save Telemetry &amp; Update Map</button>
-        </div>
-      </form>
     </div>
   </div>
 
@@ -209,26 +241,41 @@
     </div>
   </footer>
 
-  <!-- Leaflet Map JS -->
+  <!-- Scripts -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="js/officer-auth.js"></script>
   <script src="js/app.js"></script>
   <script src="js/chatbot.js"></script>
 
   <script>
+    // 1. Strict Boundary Guard - Ensure officer is authorized for DJB
+    if (!civicOfficerAuth.enforceOfficerClearance("DJB")) {
+      // Stopped, user redirected
+    }
+
     let djbMap = null;
     let djbMarkerGroup = null;
     let currentTicket = null;
 
     document.addEventListener("DOMContentLoaded", () => {
-      const auth = sessionStorage.getItem("civicconnect_auth_officer");
-      if (auth) {
-        try {
-          const user = JSON.parse(auth);
-          document.getElementById("djbOfficerBadge").textContent = `Officer: ${user.officerId}`;
-        } catch(e) {}
+      // Render Security Clearance Bar with boundary locks
+      civicOfficerAuth.renderSecurityClearanceBar("officerClearanceContainer", "DJB");
+
+      const officer = civicOfficerAuth.getActiveOfficer();
+      if (officer) {
+        document.getElementById("djbOfficerBadge").textContent = `Officer: ${officer.officerId} • ${officer.officerName}`;
       }
 
       initDjbDashboard();
+
+      // Close modal on backdrop click or ESC key
+      const modal = document.getElementById("djbActionModal");
+      modal.addEventListener("click", (e) => {
+        if (e.target === modal) modal.classList.remove("active");
+      });
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && modal.classList.contains("active")) modal.classList.remove("active");
+      });
     });
 
     function initDjbDashboard() {
@@ -255,7 +302,7 @@
 
     function initDjbMap(tickets) {
       if (djbMap) return;
-      djbMap = L.map("djbMap").setView([28.6000, 77.2200], 11);
+      djbMap = L.map("djbMap").setView([28.6000, 77.2100], 11);
       L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
         maxZoom: 19,
         attribution: '&copy; OpenStreetMap'
@@ -287,7 +334,7 @@
             <div style="font-size: 0.8rem; color: var(--text-body); margin-bottom: 6px;">${t.locationText}</div>
             <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #eee; padding-top: 6px;">
               <span class="badge ${ind.badgeClass}">${t.status}</span>
-              <a href="javascript:void(0)" onclick="openModal('${t.id}')" style="font-size: 0.8rem; font-weight: 700; color: var(--primary);">Dispatch &rarr;</a>
+              <a href="javascript:void(0)" onclick="openModal('${t.id}')" style="font-size: 0.8rem; font-weight: 700; color: #0284C7;">Jetting &rarr;</a>
             </div>
           </div>
         `;
@@ -301,7 +348,7 @@
       tbody.innerHTML = "";
 
       if (tickets.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 1.5rem;">No active DJB tickets found.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 1.5rem;">No active DJB drainage tickets found.</td></tr>`;
         return;
       }
 
@@ -312,7 +359,7 @@
           <td><strong>${t.id}</strong></td>
           <td>${t.categoryLabel || t.category}</td>
           <td>${t.locationText}</td>
-          <td><span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;">${t.roadTypeLabel || t.roadType}</span></td>
+          <td><span style="font-size: 0.8rem; color: #0284C7; font-weight: 700; background: #F0F9FF; padding: 0.2rem 0.5rem; border-radius: 4px;">${t.roadTypeLabel || t.roadType}</span></td>
           <td>
             <span class="badge ${ind.badgeClass}">
               <span class="legend-dot dot-${ind.color}" style="width: 8px; height: 8px; margin-right: 4px;"></span>
@@ -321,8 +368,8 @@
           </td>
           <td>${t.date}</td>
           <td>
-            <button type="button" class="btn btn-outline btn-sm" onclick="openModal('${t.id}')" style="padding: 0.25rem 0.65rem; font-size: 0.75rem; border-radius: var(--radius-pill);">
-              Dispatch &rarr;
+            <button type="button" class="btn btn-outline btn-sm" onclick="openModal('${t.id}')" style="padding: 0.25rem 0.65rem; font-size: 0.75rem; border-radius: var(--radius-pill); border-color: #0284C7; color: #0284C7;">
+              Dispatch Unit &rarr;
             </button>
           </td>
         `;
@@ -360,7 +407,7 @@
       const tickets = getComplaints().filter(t => t.agency === "DJB");
       initDjbDashboard();
       renderMarkers(tickets);
-      alert(`DJB Complaint ${currentTicket.id} updated to "${newStatus}". Drainage command synced.`);
+      alert(`DJB Drainage Complaint ${currentTicket.id} updated to "${newStatus}". Telemetry synchronized with Delhi master grid.`);
     }
   </script>
 </body>

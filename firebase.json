@@ -1,5 +1,6 @@
 {
   "hosting": {
+    "site": "civicconnect11",
     "public": ".",
     "ignore": [
       "firebase.json",

@@ -160,6 +160,12 @@
               <textarea id="issueDescription" class="form-textarea" rows="3" placeholder="Provide any landmark or specific hazard details..."></textarea>
             </div>
 
+            <!-- Daily Grievance Allowance Display -->
+            <div class="daily-quota-box">
+              <span>📋 Daily Grievance Allowance:</span>
+              <span class="daily-quota-badge" id="dailyQuotaBadge">5/5 available today</span>
+            </div>
+
             <button type="submit" id="submitReportBtn" class="btn btn-primary btn-block" style="padding: 0.85rem; border-radius: var(--radius-pill);">
               Submit to TinyFish Agent Grid &rarr;
             </button>
@@ -264,6 +270,52 @@
     </div>
   </div>
 
+  <!-- High-Traffic / Proximity Cluster Merging Modal -->
+  <div id="clusterModal" class="modal-overlay">
+    <div class="modal-window">
+      <div class="modal-header" style="display: flex; align-items: center; gap: 0.75rem; text-align: left;">
+        <div style="width: 44px; height: 44px; border-radius: 50%; background: #FEF3C7; border: 1px solid #FDE68A; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; flex-shrink: 0;">
+          ⚡
+        </div>
+        <div>
+          <h3 style="margin: 0; font-size: 1.2rem; color: #92400E;">Priority Cluster Endorsed</h3>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0;">High-Traffic Duplicate Suppression &amp; Escalation</p>
+        </div>
+      </div>
+
+      <div style="margin: 1.25rem 0; text-align: left; background: #FFFBEB; border: 1px solid #FDE68A; border-radius: var(--radius-sm); padding: 1rem;">
+        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.4rem;">
+          <span class="cluster-tag">⚡ High-Priority Cluster</span>
+          <span style="font-size: 0.8rem; color: #92400E; font-weight: 600;" id="clusterDistanceText">Within 35m of reported issue</span>
+        </div>
+        <p style="font-size: 0.88rem; color: #78350F; line-height: 1.45; margin: 0;">
+          An active <strong id="clusterCategoryText">hazard</strong> grievance was already filed at this exact location. Your telemetry has been merged as an <strong>Emergency Endorsement</strong>, escalating municipal dispatch to Priority 1 without duplicate processing delays!
+        </p>
+      </div>
+
+      <div style="text-align: center; margin: 1.25rem 0;">
+        <div style="font-size: 0.8rem; text-transform: uppercase; font-weight: bold; color: var(--text-muted);">Master Grievance Reference</div>
+        <div style="font-size: 1.5rem; font-family: var(--font-heading); font-weight: 700; color: var(--primary); margin: 0.3rem 0;" id="clusterMasterRefId">CC-DEL-2026-00000</div>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0;" id="clusterAgencyText">Routed to MCD Central Zone</p>
+      </div>
+
+      <!-- Citizen Leaderboard Reward Notification -->
+      <div style="background: #EFF6FF; border: 1px solid #BFDBFE; border-radius: var(--radius-sm); padding: 0.85rem 1rem; margin-bottom: 1.5rem; text-align: left; display: flex; align-items: center; gap: 0.75rem;">
+        <span style="font-size: 1.6rem;">🏆</span>
+        <div style="flex: 1;">
+          <div style="font-weight: 700; color: #1E40AF; font-size: 0.92rem;">+100 Civic Points Earned!</div>
+          <div style="font-size: 0.78rem; color: #3B82F6;" id="clusterRewardProfileText">Climbed the Delhi Citizen Leaderboard for hazard verification</div>
+        </div>
+        <a href="leaderboard.html" class="btn btn-outline btn-sm" style="font-size: 0.78rem; padding: 0.35rem 0.75rem; border-radius: var(--radius-pill); border-color: #3B82F6; color: #1D4ED8; white-space: nowrap; font-weight: 700;">Leaderboard &rarr;</a>
+      </div>
+
+      <div style="display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap;">
+        <a href="#" id="trackClusterBtn" class="btn btn-primary btn-sm" style="border-radius: var(--radius-pill);">Track Master Grievance &rarr;</a>
+        <button type="button" id="closeClusterModalBtn" class="btn btn-outline btn-sm" style="border-radius: var(--radius-pill);">Done</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Site Footer -->
   <footer class="site-footer">
     <div class="container footer-content">
@@ -302,6 +354,7 @@
       initMap();
       setupEventListeners();
       updateAgencyRouting();
+      updateDailyQuotaDisplay();
     });
 
     function initMap() {
@@ -416,7 +469,16 @@
         document.getElementById("previewPlaceholder").style.display = "block";
         selectedImageBase64 = "";
         updateAgencyRouting();
+        updateDailyQuotaDisplay();
       });
+
+      const closeClusterBtn = document.getElementById("closeClusterModalBtn");
+      if (closeClusterBtn) {
+        closeClusterBtn.addEventListener("click", () => {
+          document.getElementById("clusterModal").classList.remove("active");
+          updateDailyQuotaDisplay();
+        });
+      }
     }
 
     function updateAgencyRouting() {
@@ -445,12 +507,147 @@
       reader.readAsDataURL(file);
     }
 
+    // =========================================================================
+    // Point 1: Daily Limit per Citizen (5 automated filings/day, resets at midnight)
+    // Point 2: Proximity Cluster Merging (within 75m, zero browser tokens used)
+    // =========================================================================
+    const DAILY_LIMIT = 5;
+    const STORAGE_KEY_DAILY_QUOTA = "civicconnect_daily_quota";
+
+    function getTodayKey() {
+      const now = new Date();
+      return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+    }
+
+    function getDailyQuotaData() {
+      const today = getTodayKey();
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY_DAILY_QUOTA);
+        if (raw) {
+          const data = JSON.parse(raw);
+          if (data && data.date === today) {
+            return data;
+          }
+        }
+      } catch (e) {
+        console.warn("Daily quota read error:", e);
+      }
+      return { date: today, count: 0 };
+    }
+
+    function incrementDailyReportCount() {
+      const data = getDailyQuotaData();
+      data.count = (data.count || 0) + 1;
+      try {
+        localStorage.setItem(STORAGE_KEY_DAILY_QUOTA, JSON.stringify(data));
+      } catch (e) {
+        console.warn("Daily quota write error:", e);
+      }
+      updateDailyQuotaDisplay();
+      return data.count;
+    }
+
+    function updateDailyQuotaDisplay() {
+      const badge = document.getElementById("dailyQuotaBadge");
+      if (!badge) return;
+      const data = getDailyQuotaData();
+      const remaining = Math.max(0, DAILY_LIMIT - data.count);
+      badge.textContent = `${remaining}/${DAILY_LIMIT} available today`;
+      if (remaining === 0) {
+        badge.style.background = "#FEE2E2";
+        badge.style.borderColor = "#FCA5A5";
+        badge.style.color = "#991B1B";
+      } else {
+        badge.style.background = "#ECFDF5";
+        badge.style.borderColor = "#A7F3D0";
+        badge.style.color = "#065F46";
+      }
+    }
+
+    function calculateDistanceMeters(lat1, lon1, lat2, lon2) {
+      const R = 6371e3; // Earth radius in meters
+      const phi1 = (lat1 * Math.PI) / 180;
+      const phi2 = (lat2 * Math.PI) / 180;
+      const deltaPhi = ((lat2 - lat1) * Math.PI) / 180;
+      const deltaLambda = ((lon2 - lon1) * Math.PI) / 180;
+
+      const a = Math.sin(deltaPhi / 2) * Math.sin(deltaPhi / 2) +
+                Math.cos(phi1) * Math.cos(phi2) *
+                Math.sin(deltaLambda / 2) * Math.sin(deltaLambda / 2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      return Math.round(R * c);
+    }
+
+    function findProximityCluster(coords, category) {
+      if (!coords || typeof coords.lat !== "number" || typeof coords.lng !== "number") return null;
+      const complaints = getComplaints();
+      const thresholdMeters = 75; // 75 meters cluster radius
+
+      for (const c of complaints) {
+        if (!c.coordinates || typeof c.coordinates.lat !== "number" || typeof c.coordinates.lng !== "number") continue;
+        const status = (c.status || "").toLowerCase();
+        if (status === "closed" || status === "repaired" || status === "verified") continue;
+
+        if (c.category && c.category.toLowerCase() === category.toLowerCase()) {
+          const dist = calculateDistanceMeters(coords.lat, coords.lng, c.coordinates.lat, c.coordinates.lng);
+          if (dist <= thresholdMeters) {
+            return { match: c, distanceMeters: dist };
+          }
+        }
+      }
+      return null;
+    }
+
     function handleFormSubmit(e) {
       e.preventDefault();
 
+      const form = document.getElementById("grievanceForm");
       const categorySelect = document.getElementById("categorySelect");
       const roadTypeSelect = document.getElementById("roadTypeSelect");
       const description = document.getElementById("issueDescription").value.trim();
+
+      // Check Point 2: Proximity Cluster Merging (High traffic / storm surge protection)
+      const cluster = findProximityCluster(currentCoords, categorySelect.value);
+      if (cluster) {
+        // Escalate existing master grievance and add endorsement
+        const master = cluster.match;
+        master.escalated = true;
+        master.endorsements = (master.endorsements || 1) + 1;
+        master.clusterCount = (master.clusterCount || 1) + 1;
+        updateComplaint(master);
+
+        // Award citizen reward points
+        const updatedProfile = rewardUserReport();
+
+        // Populate cluster endorsement modal
+        document.getElementById("clusterDistanceText").textContent = `Within ${cluster.distanceMeters}m of active grievance`;
+        document.getElementById("clusterCategoryText").textContent = categorySelect.options[categorySelect.selectedIndex].text;
+        document.getElementById("clusterMasterRefId").textContent = master.id;
+        document.getElementById("clusterAgencyText").textContent = `Assigned to ${master.agency} (${master.agencyFullName || master.agency})`;
+        document.getElementById("clusterRewardProfileText").textContent = `Score: ${updatedProfile.points} pts • Earned Badge: ${updatedProfile.badgeTitle}`;
+        document.getElementById("trackClusterBtn").href = `track.html?id=${master.id}`;
+
+        document.getElementById("clusterModal").classList.add("active");
+
+        // Reset form and evidence preview
+        form.reset();
+        document.getElementById("photoPreview").style.display = "none";
+        document.getElementById("previewPlaceholder").style.display = "block";
+        selectedImageBase64 = "";
+        updateAgencyRouting();
+        updateDailyQuotaDisplay();
+        return; // Zero browser agent calls needed!
+      }
+
+      // Check Point 1: Daily Grievance Allowance Limit
+      const quota = getDailyQuotaData();
+      if (quota.count >= DAILY_LIMIT) {
+        alert("📋 Daily Grievance Allowance Reached (5/5)\n\nTo ensure fair and swift municipal dispatch across Delhi, each citizen can file up to 5 automated grievances per day.\n\nYour allowance resets at midnight. Thank you for your active citizenship!");
+        return;
+      }
+
+      // Increment daily quota count
+      incrementDailyReportCount();
 
       let finalImage = selectedImageBase64;
       if (!finalImage) {
@@ -519,6 +716,7 @@
               setStepState(4, "completed");
 
               saveComplaint(complaintData);
+              updateDailyQuotaDisplay();
 
               const updatedProfile = rewardUserReport();
               document.getElementById("rewardProfileText").textContent = `Score: ${updatedProfile.points} pts • Earned Badge: ${updatedProfile.badgeTitle}`;

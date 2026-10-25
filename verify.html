@@ -143,52 +143,27 @@
           </div>
         </div>
 
-        <!-- Success & Citizen OTP Section (If >= 85%) -->
-        <div id="otpSection" style="display: none; border: 1px solid #A7F3D0; background-color: #ECFDF5; border-radius: var(--radius-md); padding: 1.75rem; margin-bottom: 2rem;">
-          <div style="border-bottom: 1px solid #D1FAE5; padding-bottom: 0.75rem; margin-bottom: 1rem;">
-            <h4 style="color: #065F46; font-size: 1.2rem; margin-bottom: 0.25rem;">Step 2: Citizen OTP Sign-Off Required</h4>
-            <p style="font-size: 0.9rem; color: #047857; margin: 0;">
-              Pixel-similarity check passed (&ge;85%). In accordance with CivicConnect protocol, the ticket cannot close until the reporting citizen authorizes the resolution with their OTP.
-            </p>
+        <!-- Ticket Closed Final Banner (If >= 85%) -->
+        <div id="ticketClosedBanner" style="display: none; padding: 1.75rem; background-color: var(--bg-white); border: 2px solid #059669; border-radius: var(--radius-md); text-align: center; margin-bottom: 2rem; margin-top: 1.5rem; box-shadow: var(--shadow-sm);">
+          <div style="width: 48px; height: 48px; border-radius: 50%; background: #ECFDF5; color: #059669; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 0.75rem;">
+            <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
           </div>
-
-          <div style="background-color: var(--bg-white); border: 1px dashed #059669; padding: 1rem; border-radius: var(--radius-sm); margin-bottom: 1.25rem; display: inline-block;">
-            <div style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: #065F46;">Citizen Authorization Telemetry</div>
-            <div style="font-size: 1.3rem; font-family: monospace; font-weight: 700; color: #065F46; margin-top: 0.2rem;">
-              Demo Citizen OTP: <span id="displayDemoOtp">582194</span>
-            </div>
-            <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.2rem;">(Simulating SMS / PWA in-app notification delivered to citizen)</div>
-          </div>
-
-          <form id="otpForm" style="max-width: 420px;">
-            <div class="form-group">
-              <label for="citizenOtpInput" class="form-label">Enter 6-Digit Citizen OTP <span class="req">*</span></label>
-              <input type="text" id="citizenOtpInput" class="form-control" maxlength="6" placeholder="Enter 6-digit OTP" required style="font-size: 1.25rem; letter-spacing: 4px; text-align: center; font-family: monospace;">
-            </div>
-            <button type="submit" class="btn btn-primary" style="border-radius: var(--radius-pill);">
-              Verify OTP &amp; Officially Close Ticket
-            </button>
-          </form>
-        </div>
-
-        <!-- Ticket Closed Final Banner -->
-        <div id="ticketClosedBanner" style="display: none; padding: 1.5rem; background-color: var(--bg-white); border: 2px solid #059669; border-radius: var(--radius-md); text-align: center; margin-bottom: 2rem;">
-          <h3 style="color: #065F46; font-size: 1.35rem; margin-bottom: 0.35rem;">Ticket Officially Closed (🟢 Green Pin)</h3>
-          <p style="font-size: 0.95rem; color: var(--text-dark); margin-bottom: 1rem;">
-            Both AI Accountability match (&ge;85%) and Citizen OTP authorization confirmed. Resolution permanently logged on Delhi CivicConnect Grid.
+          <h3 style="color: #065F46; font-size: 1.35rem; margin-bottom: 0.35rem;">Resolution Officially Verified &amp; Closed (🟢 Green Pin)</h3>
+          <p style="font-size: 0.95rem; color: var(--text-dark); margin-bottom: 1rem; max-width: 600px; margin-left: auto; margin-right: auto;">
+            AI Accountability match (&ge;85%) confirmed genuine site restoration. Resolution permanently logged on Delhi CivicConnect Grid.
           </p>
 
           <!-- Citizen Verification Reward Box -->
           <div id="verifyRewardBox" style="background: #EFF6FF; border: 1px solid #BFDBFE; border-radius: var(--radius-sm); padding: 0.85rem 1rem; margin: 1rem auto 1.5rem; max-width: 440px; text-align: left; display: flex; align-items: center; gap: 0.75rem;">
             <span style="font-size: 1.6rem;">💎</span>
             <div style="flex: 1;">
-              <div style="font-weight: 700; color: #1E40AF; font-size: 0.92rem;">+150 Verification Bonus Points!</div>
+              <div style="font-weight: 700; color: #1E40AF; font-size: 0.92rem;">+150 Verification Bonus Points Awarded!</div>
               <div style="font-size: 0.78rem; color: #3B82F6;" id="verifyRewardText">Resolution confirmed! Check your rank on the Leaderboard.</div>
             </div>
             <a href="leaderboard.html" class="btn btn-outline btn-sm" style="font-size: 0.78rem; padding: 0.35rem 0.75rem; border-radius: var(--radius-pill); border-color: #3B82F6; color: #1D4ED8; white-space: nowrap; font-weight: 700;">Leaderboard &rarr;</a>
           </div>
 
-          <a href="track.html" class="btn btn-outline btn-sm" style="border-radius: var(--radius-pill);">Return to Track Dashboard</a>
+          <a href="track.html" class="btn btn-outline btn-sm" style="border-radius: var(--radius-pill); padding: 0.5rem 1.25rem;">Return to Track Dashboard</a>
         </div>
       </div>
     </div>
@@ -281,7 +256,6 @@
       document.getElementById("runVerificationBtn").disabled = true;
       document.getElementById("resultContainer").style.display = "none";
       document.getElementById("failureBox").style.display = "none";
-      document.getElementById("otpSection").style.display = "none";
       document.getElementById("ticketClosedBanner").style.display = "none";
       document.getElementById("scoreCard").style.display = "block";
     }
@@ -317,7 +291,6 @@
       });
 
       document.getElementById("runVerificationBtn").addEventListener("click", executeCanvasVerification);
-      document.getElementById("otpForm").addEventListener("submit", handleOtpSubmission);
     }
 
     function setAfterImage(src, metaText) {
@@ -393,7 +366,6 @@
       const statusTag = document.getElementById("resultStatusTag");
       const msgText = document.getElementById("resultMessageText");
       const failureBox = document.getElementById("failureBox");
-      const otpSection = document.getElementById("otpSection");
       const closedBanner = document.getElementById("ticketClosedBanner");
 
       resultContainer.style.display = "block";
@@ -404,48 +376,31 @@
         scoreCard.className = "verify-score-card score-pass";
         statusTag.textContent = "AI Accountability Check: PASSED";
         statusTag.style.color = "#065F46";
-        msgText.textContent = `Pixel-similarity match of ${score}% meets or exceeds the required 85% threshold. Genuine site restoration detected.`;
+        msgText.textContent = `Pixel-similarity match of ${score}% meets or exceeds the required 85% threshold. Genuine site restoration verified.`;
         failureBox.style.display = "none";
-        otpSection.style.display = "block";
 
-        const otp = activeTicket.demoOtp || "582194";
-        document.getElementById("displayDemoOtp").textContent = otp;
+        // Auto-close ticket and award citizen points
+        activeTicket.status = "Closed";
+        activeTicket.verified = true;
+        activeTicket.afterImage = afterImageSrc;
+        activeTicket.verificationScore = score;
+        updateComplaint(activeTicket);
+
+        const updatedProfile = rewardUserVerification();
+        document.getElementById("verifyRewardText").textContent = `Score: ${updatedProfile.points} pts • Current Badge: ${updatedProfile.badgeTitle}`;
+        closedBanner.style.display = "block";
+
+        alert(`Grievance ${activeTicket.id} has been officially verified and CLOSED! Map pin updated to Green.`);
       } else {
         scoreCard.className = "verify-score-card score-fail";
         statusTag.textContent = "AI Accountability Check: REJECTED";
         statusTag.style.color = "#B91C1C";
         msgText.textContent = `Pixel-similarity match of ${score}% is below the mandatory 85% threshold. Potential "boots photo" fraud flagged.`;
         failureBox.style.display = "block";
-        otpSection.style.display = "none";
+        closedBanner.style.display = "none";
       }
 
       resultContainer.scrollIntoView({ behavior: "smooth", block: "nearest" });
-    }
-
-    function handleOtpSubmission(e) {
-      e.preventDefault();
-      const enteredOtp = document.getElementById("citizenOtpInput").value.trim();
-      const expectedOtp = activeTicket.demoOtp || "582194";
-
-      if (enteredOtp !== expectedOtp) {
-        alert(`Invalid OTP. Please enter the valid citizen authorization code shown on screen (${expectedOtp}).`);
-        return;
-      }
-
-      activeTicket.status = "Closed";
-      activeTicket.verified = true;
-      activeTicket.afterImage = afterImageSrc;
-      activeTicket.verificationScore = parseInt(document.getElementById("similarityScoreText").textContent);
-      updateComplaint(activeTicket);
-
-      const updatedProfile = rewardUserVerification();
-      document.getElementById("verifyRewardText").textContent = `Score: ${updatedProfile.points} pts • Current Badge: ${updatedProfile.badgeTitle}`;
-
-      document.getElementById("otpSection").style.display = "none";
-      document.getElementById("scoreCard").style.display = "none";
-      document.getElementById("ticketClosedBanner").style.display = "block";
-
-      alert(`Grievance ${activeTicket.id} has been officially verified and CLOSED! Map pin updated to Green.`);
     }
   </script>
 </body>
